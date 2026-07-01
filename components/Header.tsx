@@ -5,14 +5,17 @@ import SearchBar from "./SearchBar";
 import CartIcon from "./CartIcon";
 import FavoriteBtn from "./FavoriteBtn";
 import SignIn from "./SignIn";
-import SignUp from "./SignUp";
 import MobileMenu from "./MobileMenu";
+import { currentUser } from "@clerk/nextjs/server";
+import { ClerkLoaded, UserButton } from "@clerk/nextjs";
 
- const Header = () => {
-
+ const Header = async() =>  {
+  const user = await currentUser();
+  console.log(user,"user");
+  
   return (
-    <header className= "bg-white py-5 border-b-black ">
-      <Container className="flex items-center justify-between">
+    <header className= "bg-white py-5">
+      <Container className="flex items-center justify-between text-lg">
         {/* Logo */}
         <div className="w-auto md:w-1/3 flex items-center gap-2.5 justify-start md:gap-0">
           <MobileMenu />
@@ -27,13 +30,17 @@ import MobileMenu from "./MobileMenu";
           <SearchBar />
           <CartIcon />
           <FavoriteBtn />
-          <SignIn />
-          <SignUp />
-        </div>
 
+          <ClerkLoaded>
+            {/* {user ? <UserButton /> : <SignIn />} */} 
+              <UserButton />
+          </ClerkLoaded>
+          {!user && <SignIn />}
+
+        </div>
       </Container>
     </header>
-  )
-}
+  );
+};
 
 export default Header
