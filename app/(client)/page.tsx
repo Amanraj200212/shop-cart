@@ -1,14 +1,15 @@
 import Container from "@/components/Container";
 import HomeBanner from "@/components/HomeBanner";
-import { Button } from "@/components/ui/button";
+import ProductGrid from "@/components/ProductGrid";
 
 const Home = () => {
   return (
-    <Container className="bg-shop">
+    <Container>
       <HomeBanner />
-      <Button size="lg" variant="destructive">
-        checkout
-      </Button>
+      <div className="py-4">
+        <ProductGrid />
+      </div>
+      
     </Container>
   );
 };

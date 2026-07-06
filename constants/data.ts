@@ -7,7 +7,6 @@ export const headerData = [
   {title: "Hot Deal", href: "/deal"},
 ];
 
-
 export const quickLinks = [
   {title: "About us", href: "/about"},
   {title: "Contact us", href: "/contact"},
@@ -27,4 +26,10 @@ export const categoriesData = [
   {title: "Gadget accessories", href: "gadgets-accessories"},
 ]
 
+export const productType = [
+  { title: "Gadget", value: "gadget" },
+  { title: "Appliances", value: "appliances" },
+  { title: "Refrigerators", value: "refrigerators" },
+  { title: "Others", value: "others" },
+];
 
