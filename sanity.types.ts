@@ -300,6 +300,7 @@ export type Category = {
   description?: string;
   range?: number;
   featured?: boolean;
+  productCount?: number;
   image?: {
     asset?: SanityImageAssetReference;
     media?: unknown;
@@ -433,3 +434,63 @@ export type AllSanitySchemaTypes =
   | SanityAssetSourceData
   | SanityImageAsset
   | Geopoint;
+
+// Source: sanity/queries/query.ts
+// Variable: BRAND_QUERY
+// Query: *[_type == 'brand'] | order(name asc)
+export type BRAND_QUERY_RESULT = Array<{
+  _id: string;
+  _type: "brand";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  slug?: Slug;
+  description?: string;
+  image?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+}>;
+
+// Source: sanity/queries/query.ts
+// Variable: LATEST_BLOG_QUERY
+// Query: *[_type == 'blog'] | order(name asc) {..., blogcategories[] -> {title}}
+export type LATEST_BLOG_QUERY_RESULT = Array<{
+  _id: string;
+  _type: "blog";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  slug?: Slug;
+  author?: AuthorReference;
+  mainImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  blogCategories?: Array<
+    {
+      _key: string;
+    } & BlogCategoryReference
+  >;
+  publishedAt?: string;
+  isLatest?: boolean;
+  body?: BlockContent;
+  blogcategories: null;
+}>;
+
+// Query TypeMap
+import "@sanity/client";
+declare module "@sanity/client" {
+  interface SanityQueries {
+    "*[_type == 'brand'] | order(name asc)": BRAND_QUERY_RESULT;
+    "*[_type == 'blog'] | order(name asc) {..., blogcategories[] -> {title}} ": LATEST_BLOG_QUERY_RESULT;
+  }
+}
