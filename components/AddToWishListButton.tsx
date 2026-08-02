@@ -1,13 +1,13 @@
 import { cn } from '@/lib/utils';
-import { Product } from '@/sanity.types';
 import { Heart } from 'lucide-react';
 import React from 'react'
+import type { ProductCardProduct } from './product-types';
 
 const AddToWishListButton = ({
     product,
     className,
   } : {
-    product: Product;
+    product: ProductCardProduct;
     className?: string;
   }) => {
   return (
