@@ -84,7 +84,7 @@ export type Blog = {
     crop?: SanityImageCrop;
     _type: "image";
   };
-  blogCategories?: Array<
+  blogcategories?: Array<
     {
       _key: string;
     } & BlogCategoryReference
@@ -475,15 +475,12 @@ export type LATEST_BLOG_QUERY_RESULT = Array<{
     crop?: SanityImageCrop;
     _type: "image";
   };
-  blogCategories?: Array<
-    {
-      _key: string;
-    } & BlogCategoryReference
-  >;
+  blogcategories: Array<{
+    title: string | null;
+  }> | null;
   publishedAt?: string;
   isLatest?: boolean;
   body?: BlockContent;
-  blogcategories: null;
 }>;
 
 // Query TypeMap

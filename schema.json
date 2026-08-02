@@ -369,7 +369,7 @@
         },
         "optional": true
       },
-      "blogCategories": {
+      "blogcategories": {
         "type": "objectAttribute",
         "value": {
           "type": "array",
