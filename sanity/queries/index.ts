@@ -1,6 +1,6 @@
 import { Category } from "@/sanity.types";
 import { sanityFetch } from "../lib/live";
-import { BRAND_QUERY, LATEST_BLOG_QUERY } from "./query";
+import { BRAND_QUERY, DEAL_PRODUCTS, LATEST_BLOG_QUERY } from "./query";
 
 const getCategories = async (quantity?: number): Promise<Category[]> => {
   try {
@@ -43,6 +43,17 @@ const getAlllatestBLog = async() => {
     console.log("Error in fetching Latest Blogs", error);
     return[]
   }
-}
+};
+const getAllDealProducts = async() => {
+  try {
+    const {data} = await sanityFetch({query: DEAL_PRODUCTS});
+    return data ?? []
+  } catch (error) {
+    console.log("Error in fetching Deal Products", error);
+    return[]
+  }
+};
 
-export {getCategories, getAllBrands, getAlllatestBLog};
+
+
+export {getCategories, getAllBrands, getAlllatestBLog, getAllDealProducts};

@@ -1,7 +1,9 @@
-const Blog = () => {
+import React from 'react'
+
+const page = () => {
   return (
-    <div>blog page</div>
+    <div>page</div>
   )
 }
 
-export default Blog
+export default page
