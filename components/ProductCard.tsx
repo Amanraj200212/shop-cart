@@ -12,15 +12,17 @@ const ProductCard = ({product}: {product : ProductCardProduct}) => {
     <div className='text-sm border border-darkBlue/20 rounded-md bg-white group'>
       <div className='relative group overflow-hidden bg-shop_light_bg'>
         {product?.images && (
-          <Image 
-            alt="productImage" 
-            src={urlFor(product?.images[0]).url()} 
-            loading='lazy'
-            height={700}
-            width={700}
-            className={`w-full h-64 object-contain overflow-hidden transition-transform bg-shop_light_bg hoverEffect 
-              ${product?.stock !== 0 ? "group-hover:scale-105" : "opacity-50"}`}
-          />
+          <Link href={`/product/${product?.slug?.current}`}>
+            <Image 
+              alt="productImage" 
+              src={urlFor(product?.images[0]).url()} 
+              loading='lazy'
+              height={700}
+              width={700}
+              className={`w-full h-64 object-contain overflow-hidden cursor-pointer transition-transform bg-shop_light_bg hoverEffect 
+                ${product?.stock !== 0 ? "group-hover:scale-105" : "opacity-50"}`}
+            />
+          </Link>
         )}
         <AddToWishListButton product={product} />
 

@@ -34,8 +34,8 @@ const ShopByBrand = async() => {
 
   return (
     <div className='mb-10 lg:pb-20 bg-shop_light_bg p-5 lg:p-7 rounded-md'>
-      <div className='flex items-center gap-5 justify-between mb-10'>
-        <h2 className='text-2xl font-semibold  pb-3'>
+      <div className='flex items-center gap-5 justify-between border-b mb-10'>
+        <h2 className='text-2xl font-semibold   pb-3'>
           Shop By Brand
         </h2>
         <Link
@@ -48,7 +48,7 @@ const ShopByBrand = async() => {
 
       {/* flex items-center  justify-between  */}
       {/* grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 */}
-      <div className=' flex items-center justify-between gap-2.5 '>
+      <div className=' grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8  gap-2.5 '>
         {brands?.map((brand) => (
           <Link 
             href={`/brand/${brand?.slug?.current}`} 
