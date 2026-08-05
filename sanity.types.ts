@@ -547,6 +547,13 @@ export type PRODUCT_BY_SLUG_QUERY_RESULT = {
   isFeatured?: boolean;
 } | null;
 
+// Source: sanity/queries/query.ts
+// Variable: BRANDNAME_QUERY
+// Query: *[_type == "product" && slug.current == $slug]{  "brandName": brand->title  }
+export type BRANDNAME_QUERY_RESULT = Array<{
+  brandName: string | null;
+}>;
+
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
@@ -555,5 +562,6 @@ declare module "@sanity/client" {
     "*[_type == 'blog'] | order(name asc) {..., blogcategories[] -> {title}} ": LATEST_BLOG_QUERY_RESULT;
     '*[_type == \'product\' && status == "hot"] | order(name asc) {...,"categories": categories[] -> title} ': DEAL_PRODUCTS_RESULT;
     "*[_type == 'product' && slug.current == $slug] | order(name asc) [0]": PRODUCT_BY_SLUG_QUERY_RESULT;
+    '*[_type == "product" && slug.current == $slug]{\n  "brandName": brand->title\n  }': BRANDNAME_QUERY_RESULT;
   }
 }
