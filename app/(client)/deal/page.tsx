@@ -6,7 +6,6 @@ import ProductCard from '@/components/ProductCard';
 
 const page = async () => {
   const products = await getAllDealProducts();
-  console.log(products, "products")
 
   return (
     <div className='bg-shop_light_bg py-10'>

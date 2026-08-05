@@ -4,6 +4,9 @@ import { getProductsBySlugQuery } from '@/sanity/queries';
 import { StarIcon } from 'lucide-react';
 import PriceView from '@/components/PriceView';
 import React from 'react'
+import AddToCartButton from '@/components/AddToCartButton';
+import FavoriteBtn from '@/components/FavoriteBtn';
+import ProductCharacteristics from '@/components/ProductCharacteristics';
 
 const page = async({params}: {params: {slug: string}}) => {
   const {slug} = await params;
@@ -32,18 +35,23 @@ const page = async({params}: {params: {slug: string}}) => {
             <p className='font-semibold'>{`(120})`}</p>
           </div>
         </div>
-        <div className='space-y-2 border-b border-t border-gray-200 py-5'>
+        <div className='space-y-2 border-b border-t border-gray-200 py-5 '>
           <PriceView 
             price={product?.price} 
             discount={product?.discount} 
             className='text-lg font-bold'
           />
           <p 
-            className={`px-4 py-1.5 font-semibold rounded-lg ${product?.stock === 0 ? "bg-red-100 text-red-600" : " bg-green-100 text-green-600"}`}
+            className={`px-4 py-1.5 inline-block font-semibold rounded-lg ${product?.stock === 0 ? "bg-red-100 text-red-600" : " bg-green-100 text-green-600"}`}
           >
             {(product?.stock as number) > 0 ? "In Stock" : "Out of Stock"}
           </p>
         </div>
+        <div className='flex items-center gap-2.5 lg:gap-3'>
+          <AddToCartButton product={product}/>
+          <FavoriteBtn showProduct={true} product={product} />
+        </div>
+        <ProductCharacteristics product={product} />
       </div>
     </Container>
   )

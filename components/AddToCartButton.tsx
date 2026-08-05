@@ -5,8 +5,9 @@ import type { ProductCardProduct } from './product-types';
 import { ShoppingBag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
+import { Product } from '@/sanity.types';
 interface Props{
-  product: ProductCardProduct;
+  product: ProductCardProduct| Product | null | undefined;
   className?: string;
 }
 

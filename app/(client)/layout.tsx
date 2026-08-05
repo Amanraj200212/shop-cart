@@ -17,10 +17,10 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html
+      {/* <html
         lang="en"
       >
-        <body >
+        <body > */}
           <div className="flex min-h-screen flex-col">
             <div className="sticky top-0 z-50">
               <Header />
@@ -30,8 +30,8 @@ export default function RootLayout({
             </main>
             <Footer />
           </div>
-        </body>
-      </html>
+        {/* </body>
+      </html> */}
     </ClerkProvider>
 
   );
