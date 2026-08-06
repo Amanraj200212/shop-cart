@@ -51,7 +51,7 @@ const ImageView = ({images = [], isStock}: Props) => {
           <button 
             key={image?._key} 
             onClick={() =>setActive(image)}
-            className={`border border-muted overflow-hidden ${active?._key === image?._key ? "opacity-100 border-darkColor" : "opacity-80"}`}
+            className={`border overflow-hidden rounded-lg ${active?._key === image?._key ? "opacity-100 border-darkColor" : "opacity-80"}`}
           >
             <Image  
               src={urlFor(image).url()} 
