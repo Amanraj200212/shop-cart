@@ -45,14 +45,11 @@ const ShopByBrand = async() => {
           View all
         </Link>
       </div>
-
-      {/* flex items-center  justify-between  */}
-      {/* grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 */}
       <div className=' grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8  gap-2.5 '>
         {brands?.map((brand) => (
           <Link 
-            href={`/brand/${brand?.slug?.current}`} 
-            key={brand?.title} 
+            key={brand?._id} 
+            href={{pathname: '/shop', query:{brand: brand?.slug?.current}}} 
             className='bg-white w-36 h-24 flex items-center justify-center rounded-md overflow-hidden hover:shadow-lg shadow-shop_dark_green/20 hoverEffect'
           > 
             {brand?.image && (

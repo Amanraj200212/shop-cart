@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 interface Props {
   amount: number | undefined;
-  className: string;
+  className?: string;
 }
 
 const PriceFormatter = ({amount, className}: Props) => {

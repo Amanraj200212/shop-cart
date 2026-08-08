@@ -1,6 +1,6 @@
 'use client'
 
-import { BRAND_QUERY_RESULT, Category, Product } from "@/sanity.types"
+import { BRAND_QUERY_RESULT, Category } from "@/sanity.types"
 import React, { useEffect, useState } from "react"
 import Container from "./Container"
 import CategoryList from "./shop/CategoryList"
@@ -8,7 +8,13 @@ import { useSearchParams } from "next/navigation"
 import BrandList from "./shop/BrandList"
 import PriceList from "./shop/PriceList"
 import { client } from "@/sanity/lib/client"
-2
+import ProductCard from "./ProductCard"
+import { Loader2 } from "lucide-react"
+import NoProductAvailable from "./NoProductAvailable"
+
+import type { ProductCardProduct } from './product-types'
+
+
 interface Props {
   categories: Category[],
   brands: BRAND_QUERY_RESULT
@@ -17,52 +23,45 @@ interface Props {
 const Shop = ({categories, brands}: Props) => {
   const searchParams = useSearchParams();
   const brandParams = searchParams?.get('brand');
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductCardProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(brandParams || null);
   const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
 
-  const fetchProducts = async() => {
-    setLoading(true);
-    try {
-      let minPrice = 0;
-      let maxPrice = 10000;
-      if(selectedPrice) {
-        const [min, max] = selectedPrice.split("-").map(Number);
-        minPrice = min;
-        maxPrice = max;
+  useEffect (() => {
+    const fetchProducts = async() => {
+      setLoading(true);
+      try {
+        let minPrice = 0;
+        let maxPrice = 10000;
+        if(selectedPrice) {
+          const [min, max] = selectedPrice.split("-").map(Number);
+          minPrice = min;
+          maxPrice = max;
+        }
+
+        //this query is based on price{min and max price}, brand and categroey . just for filter produxt and get accrding to ure filter
+        const query = `
+        *[_type == 'product' 
+          && (!defined($selectedCategory) || references(*[_type == "category" && slug.current == $selectedCategory]._id))
+          && (!defined($selectedBrand) || references(*[_type == "brand" && slug.current == $selectedBrand]._id))
+          && price >= $minPrice && price <= $maxPrice
+        ] 
+        | order(name asc) {
+          ...,"categories": categories[]->title
+        }
+        `;
+        const data = await client.fetch(query, {selectedCategory, selectedBrand, selectedPrice, minPrice, maxPrice});
+        setProducts(data);
+      } catch (error) {
+        console.log('Shop product fetching Error', error)
+      } finally {
+        setLoading(false);
       }
-
-      //this query is based on price{min and max price}, brand and categroey . just for filter produxt and get accrding to ure filter
-      const query = `
-      *[_type == 'product' 
-        && (!defined($selectedCategory) || references(*[_type == "category" && slug.current == $selectedCategory]._id))
-        && (!defined($selectedBrand) || references(*[_type == "brand" && slug.current == $selectedBrand]._id))
-        && price >= $minPrice && price <= $maxPrice
-      ] 
-      | order(name asc) {
-        ...,"categories": categories[]->title
-      }
-      `;
-      const data = await client.fetch(query, {selectedCategory, selectedBrand, selectedPrice, minPrice, maxPrice}, {next: {revalidate: 0}});
-      // setProducts(data);
-      console.log("data", data)
-    } catch (error) {
-      console.log('Shop product fetching Error', error)
-    } finally {
-      setLoading(false);
-    }
-  };  
-
-  useEffect(  () => {
-    async function fetchdata () {
-      await fetchProducts();
-    }
-    fetchdata()
-  }, [selectedCategory, selectedBrand, selectedPrice])
-
-
+    };
+    fetchProducts();
+  }, [selectedCategory, selectedBrand, selectedPrice]);
 
   return (
     <div className="border-t">
@@ -109,7 +108,27 @@ const Shop = ({categories, brands}: Props) => {
             />
           </div>
 
-          <div>g</div>
+          <div className="flex-1 pt-5">
+            <div className="h-[calc(100vh-160px)] overflow-y-auto pr-2 scrollbar-hide">
+              {loading ? (
+                <div className="p-20 flex flex-col gap-2 items-center justify-center bg-white">
+                  <Loader2 className="w-10 h-10 text-shop_dark_green animate-spin" />
+                  <p className="font-semibold tracking-wide text-base">Product is loading...</p>
+                </div>
+              ) : (
+                <div>
+                  {products?.length > 0 ? (
+                    <div className=" grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
+                      {products?.map((product) => (
+                        <ProductCard key={product?._id} product={product} />
+                      ))}
+                    </div> ) : (
+                  <NoProductAvailable className="bg-white mt-0"/>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
       </Container>

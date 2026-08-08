@@ -4,31 +4,54 @@ import { Button } from './ui/button';
 import type { ProductCardProduct } from './product-types';
 import { ShoppingBag } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
-import { Product } from '@/sanity.types';
+import useStore from '@/store';
+import toast from 'react-hot-toast';
+import PriceFormatter from './PriceFormatter';
+import QuantityButton from './QuantityButton';
 interface Props{
-  product: ProductCardProduct| Product | null | undefined;
+  product: ProductCardProduct;
   className?: string;
 }
 
 const AddToCartButton = ({product, className} : Props) => {
+  const {addItem, getItemCount} = useStore();
+  const itemCount = getItemCount(product?._id);
   const isOutOfStock = product?.stock === 0;
-  const [clickAddToCart, isClickedAddToCart] = useState(false);
 
   const handledAddToCart = () => {
-    isClickedAddToCart(true);
-    console.log("Add to cart clicked for product:", product?.name);
-  }
+    if((product?.stock as number) > itemCount){
+      addItem(product);
+      toast.success(`${product?.name?.substring(0, 12)}... added successfully`)
+    } else {
+      toast.error('can not add more than available stock')
+    }
+  };
 
   return (
     <div className='w-full h-12 flex items-center'>
-      <Button 
-        className={cn("w-full bg-shop_dark_green/80 text-shop_light_bg shadow-none border border-shop_dark_green/80 font-semibold tracking-wide hover:text-white hover:border-shop_dark_green hover:bg-shop_dark_green hoverEffect", className)}
-        onClick={handledAddToCart}
-      >
-        <ShoppingBag />
-        {isOutOfStock ? "Out of Stock" : "Add to Cart"}
-      </Button>
+      {itemCount ? (
+        <div className='w-full text-sm'>
+          <div className='flex items-center justify-between'>
+            <span className='text-xs text-darkColor/80'>Quantity</span>
+            <QuantityButton product={product}/>
+          </div>
+          <div className='flex items-center justify-between border-t pt-1'>
+            <span className='text-xs font-semibold'>Subtotal</span>
+            <PriceFormatter
+              amount={product?.price ? product?.price * itemCount : 0} 
+            />
+          </div>
+        </div>
+      ) : (
+        <Button 
+          disabled={isOutOfStock}
+          onClick={handledAddToCart}
+          className={cn("w-full bg-shop_dark_green/80 text-shop_light_bg shadow-none border border-shop_dark_green/80 font-semibold tracking-wide hover:text-white hover:border-shop_dark_green hover:bg-shop_dark_green hoverEffect", className)}
+        >
+          <ShoppingBag />
+          {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+        </Button>
+      )}
     </div>
   )
 }

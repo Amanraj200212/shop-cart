@@ -9,7 +9,7 @@ const notFoundPage = () => {
         <div className='text-center'>
           <Logo />
           <h2 className='mt-6 text-3xl font-extrabold text-gray-900'>Looking for something?</h2>
-          <p className='mt-2 text-3xl text-gray-600'>We&apos;re sorry. the web address you entred ia not a functioning page on our site</p>
+          <p className='mt-2 text-3xl text-gray-600'>We&apos;re sorry. the web address you entred is not a functioning page on our site</p>
         </div>
         <div className='mt-8 space-y-6'>
           <div className='rounded-md shadow-sm space-y-4'>
