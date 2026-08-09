@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react'
 import { Product } from '@/sanity.types'
-import { ProductCardProduct } from './product-types'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
 import { CardContent } from './ui/card'
 import Container from './Container'
@@ -15,7 +14,7 @@ const triggerClass =
   data-[state=active]:ring-2 \
   data-[state=active]:ring-shop_dark_green";
 
-const ProductMoreDetails = ({product} : {product: ProductCardProduct | Product | null | undefined}) => {
+const ProductMoreDetails = ({product} : {product: Product | null | undefined}) => {
   const [activeTab, setActiveTab] = useState('Description');
     
   return (

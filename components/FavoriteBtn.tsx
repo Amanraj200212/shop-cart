@@ -2,33 +2,24 @@
 
 import Link from 'next/link'
 import { Heart } from 'lucide-react'
-import { ProductCardProduct } from './product-types';
 import { Product } from '@/sanity.types';
 import toast from 'react-hot-toast';
-import { cn } from '@/lib/utils';
 import useStore from '@/store';
-import { useEffect, useState } from 'react';
 
 const FavoriteBtn = ({showProduct = false, product} : { 
   showProduct?: boolean; 
-  // product?: ProductCardProduct;
-  product?: ProductCardProduct | Product | null | undefined
+  product?: Product | null | undefined
 }) => {
   const {favoriteProduct, addToFavorite} = useStore ();
-    const [existingProduct, setExistingProduct] = useState<ProductCardProduct | null>(null);
-
-    useEffect(() => {
-      const availableProduct = favoriteProduct?.find(
-        (item) => item?._id === product?._id
-      );
-      setExistingProduct(availableProduct || null);
-    }, [product, favoriteProduct]);
+    const isFavorite = favoriteProduct?.some(
+      (item) => item?._id === product?._id
+    );
 
     const handleFavorite = (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
       if(product?._id){
         addToFavorite(product).then(() => {
-          toast.success(existingProduct ? 'Removed from Favorite!' : 'Added to Favorite!')
+          toast.success(isFavorite ? 'Removed from Favorite!' : 'Added to Favorite!')
         })
       }
     };
@@ -50,7 +41,7 @@ const FavoriteBtn = ({showProduct = false, product} : {
         className='border group relative hover:text-shop_light_green hoverEffect border-shop_light_green/80 hover:border-shop_light_green p-1.5 rounded-sm'
       >
         <Heart 
-          className={`text-shop_light_green/80 group-hover:text-shop_light_green hoverEffect mt-0.5 w-5 h-5 ${existingProduct ? ' fill-shop_dark_green' : ''}`} 
+          className={`text-shop_light_green/80 group-hover:text-shop_light_green hoverEffect mt-0.5 w-5 h-5 ${isFavorite ? ' fill-shop_dark_green' : ''}`} 
         />
       </button>
      )}

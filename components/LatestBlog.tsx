@@ -1,12 +1,12 @@
 import { urlFor } from '@/sanity/lib/image';
-import { getAlllatestBLog } from '@/sanity/queries'
+import { getLatestBlogs } from '@/sanity/queries'
 import { Calendar } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import dayjs from 'dayjs';
 
 const LatestBlog = async() => {
-  const blogs = await getAlllatestBLog();
+  const blogs = await getLatestBlogs();
   return (
     <div className='mb-10 lg:mb-20'>
       <h2 className='text-2xl font-semibold  pb-3'>Latest Blog</h2>

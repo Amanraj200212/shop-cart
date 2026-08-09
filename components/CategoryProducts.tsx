@@ -1,6 +1,6 @@
 "use client"
 
-import { Category } from '@/sanity.types'
+import { Category, Product } from '@/sanity.types'
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from './ui/button';
@@ -9,8 +9,6 @@ import ProductCard from './ProductCard';
 import { Loader2 } from 'lucide-react';
 import NoProductAvailable from './NoProductAvailable';
 import { AnimatePresence, motion } from 'motion/react';
-import { ProductCardProduct } from './product-types';
-
 
 interface CategoryProductsProps {
   categories: Category[];
@@ -94,7 +92,7 @@ const CategoryProducts = ({categories, slug}: CategoryProductsProps) => {
         ) : products?.length > 0 ? (
             <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5
             '>
-              {products?.map((product: ProductCardProduct) => (
+              {products?.map((product: Product) => (
                 <AnimatePresence key={product?._id} >
                   <motion.div>
                     <ProductCard product={product}/>

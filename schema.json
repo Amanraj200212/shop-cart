@@ -62,6 +62,13 @@
         },
         "optional": true
       },
+      "state": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
       "zip": {
         "type": "objectAttribute",
         "value": {
@@ -86,7 +93,7 @@
     }
   },
   {
-    "name": "blogCategory",
+    "name": "blogcategory",
     "type": "document",
     "attributes": {
       "_id": {
@@ -99,7 +106,7 @@
         "type": "objectAttribute",
         "value": {
           "type": "string",
-          "value": "blogCategory"
+          "value": "blogcategory"
         }
       },
       "_createdAt": {
@@ -236,7 +243,7 @@
   },
   {
     "type": "type",
-    "name": "blogCategory.reference",
+    "name": "blogcategory.reference",
     "value": {
       "type": "object",
       "attributes": {
@@ -261,7 +268,7 @@
           "optional": true
         }
       },
-      "dereferencesTo": "blogCategory"
+      "dereferencesTo": "blogcategory"
     }
   },
   {
@@ -385,7 +392,7 @@
             },
             "rest": {
               "type": "inline",
-              "name": "blogCategory.reference"
+              "name": "blogcategory.reference"
             }
           }
         },
@@ -1079,14 +1086,14 @@
         },
         "optional": true
       },
-      "stripCheckoutSessionId": {
+      "stripeCheckoutSessionId": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
         },
         "optional": true
       },
-      "stripCustomerId": {
+      "stripeCustomerId": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
@@ -1255,7 +1262,7 @@
             },
             {
               "type": "string",
-              "value": "Cancelled"
+              "value": "cancelled"
             }
           ]
         },

@@ -1,11 +1,11 @@
 import React from 'react'
-import { getAllDealProducts } from '@/sanity/queries'
+import { getDealProducts } from '@/sanity/queries'
 import Container from '@/components/Container';
 import { Title } from '@/components/Title';
 import ProductCard from '@/components/ProductCard';
 
 const page = async () => {
-  const products = await getAllDealProducts();
+  const products = await getDealProducts();
 
   return (
     <div className='bg-shop_light_bg py-10'>
@@ -22,8 +22,5 @@ const page = async () => {
     </div>
   )
 }
-
-
-
 
 export default page

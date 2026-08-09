@@ -3,7 +3,7 @@ import { TrolleyIcon} from "@sanity/icons"
 
 export const productType = defineType({
   name: "product",
-  title: "Product",
+  title: "Products",
   type: "document",
   icon: TrolleyIcon,
   fields: [
@@ -38,13 +38,13 @@ export const productType = defineType({
       name: "price",
       title: "Price",
       type: "number",
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().min(0),
     }),
     defineField({
       name: "discount",
-      title: "Discount Percentage %",
+      title: "Discount",
       type: "number",
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().min(0),
     }),
     defineField({
       name: "categories",
@@ -56,7 +56,7 @@ export const productType = defineType({
       name: "stock",
       title: "Stock",
       type: "number",
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.min(0),
     }),
     defineField({
       name: "brand",
@@ -91,10 +91,10 @@ export const productType = defineType({
     }),
     defineField({
       name: "isFeatured",
-      title: "iFeatured Product",
+      title: "Featured Product",
       type: "boolean",
-      description: "Toogle to Featured on or off",
-      initialValue: true,
+      description: "Toggle to Featured on or off",
+      initialValue: false,
     }),
   ],
 
@@ -111,8 +111,8 @@ export const productType = defineType({
       const image= media && media[0];
       return{
         title: title,
-        subtitle: subtitle,
-        media: image
+        subtitle: `$${subtitle}`,
+        media: image,
       };
     },
   },

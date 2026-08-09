@@ -1,12 +1,12 @@
 import useStore from '@/store'
-import { ProductCardProduct } from './product-types';
 import { Button } from './ui/button';
 import { Minus, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
+import { Product } from '@/sanity.types';
 
 interface Props{
-  product: ProductCardProduct;
+  product: Product;
   className?: string;
 }
 

@@ -1,13 +1,12 @@
 import React from 'react'
-import { ProductCardProduct } from './product-types'
 import { Product } from '@/sanity.types'
-import { getBrandName } from '@/sanity/queries'
+import { getBrand } from '@/sanity/queries'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion'
 
 
 
-const ProductCharacteristics = async({product} : {product: ProductCardProduct | Product | null | undefined}) => {
-  const brand = await getBrandName (product?.slug?.current as string);
+const ProductCharacteristics = async({product} : {product: Product | null | undefined}) => {
+  const brand = await getBrand (product?.slug?.current as string);
   return (
     <Accordion type='single' collapsible>
       <AccordionItem value='item-1'>

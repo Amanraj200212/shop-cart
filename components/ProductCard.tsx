@@ -1,13 +1,13 @@
 import { urlFor } from '@/sanity/lib/image'
-import type { ProductCardProduct } from './product-types'
 import { Flame, StarIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import AddToWishListButton from './AddToWishListButton'
 import PriceView from './PriceView'
 import AddToCartButton from './AddToCartButton'
+import { Product } from '@/sanity.types'
 
-const ProductCard = ({product}: {product : ProductCardProduct}) => {
+const ProductCard = ({product}: {product : Product}) => {
   return (
     <div className='text-sm border border-darkBlue/20 rounded-md bg-white group'>
       <div className='relative group overflow-hidden bg-shop_light_bg'>

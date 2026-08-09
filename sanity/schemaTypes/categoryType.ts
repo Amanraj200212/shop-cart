@@ -1,13 +1,13 @@
 //defining the category schema for sanity
 
 import { defineField, defineType } from "sanity";
-import { TagsIcon } from "@sanity/icons";
+import { TagIcon } from "@sanity/icons";
 
-export const categoryType= defineType({
+export const categoryType = defineType({
   name: "category",
   title: "Category",
   type: "document",
-  icon: TagsIcon,
+  icon: TagIcon,
   fields: [
     defineField({
       name: "title",
@@ -17,19 +17,20 @@ export const categoryType= defineType({
     defineField({
       name: "slug",
       type: "slug",
-      validation: (Rule) => Rule.required().error("Slug is required"),
-      options:{
+      options: {
         source: "title",
         maxLength: 96,
-      }
+      },
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "description",
-      type: "string",
+      type: "text",
     }),
     defineField({
       name: "range",
       type: "number",
+      description: "Starting from",
     }),
     defineField({
       name: "featured",
@@ -42,11 +43,11 @@ export const categoryType= defineType({
       type: "image",
       options: {
         hotspot: true,
-      }
+      },
     }),
   ],
   preview: {
-    select:{
+    select: {
       title: "title",
       subtitle: "description",
       media: "image",

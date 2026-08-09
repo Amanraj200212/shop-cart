@@ -10,7 +10,9 @@ interface Props{
 }
 
 const BrandList = ({brands, selectedBrand, setSelectedBrand} :  Props) => {
-
+  
+  console.log('brands')
+  console.log(brands)
   return (
     <div className='w-full bg-white p-5'>
       <h2 className="text-none font-semibold ">

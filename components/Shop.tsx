@@ -1,6 +1,6 @@
 'use client'
 
-import { BRAND_QUERY_RESULT, Category } from "@/sanity.types"
+import { BRAND_QUERY_RESULT, Category, Product } from "@/sanity.types"
 import React, { useEffect, useState } from "react"
 import Container from "./Container"
 import CategoryList from "./shop/CategoryList"
@@ -12,7 +12,6 @@ import ProductCard from "./ProductCard"
 import { Loader2 } from "lucide-react"
 import NoProductAvailable from "./NoProductAvailable"
 
-import type { ProductCardProduct } from './product-types'
 
 
 interface Props {
@@ -23,7 +22,7 @@ interface Props {
 const Shop = ({categories, brands}: Props) => {
   const searchParams = useSearchParams();
   const brandParams = searchParams?.get('brand');
-  const [products, setProducts] = useState<ProductCardProduct[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(brandParams || null);

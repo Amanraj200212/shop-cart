@@ -1,5 +1,5 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
-import {DocumentTextIcon} from "@sanity/icons"
+import { DocumentTextIcon } from "@sanity/icons";
 
 export const blogType = defineType({
   name: "blog",
@@ -15,13 +15,13 @@ export const blogType = defineType({
       name: "slug",
       type: "slug",
       options: {
-        source: "title"
+        source: "title",
       },
     }),
     defineField({
       name: "author",
       type: "reference",
-      to: {type: "author"},
+      to: { type: "author" },
     }),
     defineField({
       name: "mainImage",
@@ -34,7 +34,7 @@ export const blogType = defineType({
       name: "blogcategories",
       type: "array",
       of: [
-        defineArrayMember({ type: "reference", to: { type: "blogCategory"}})
+        defineArrayMember({ type: "reference", to: { type: "blogcategory" } }),
       ],
     }),
     defineField({
@@ -45,7 +45,7 @@ export const blogType = defineType({
       name: "isLatest",
       title: "Latest Blog",
       type: "boolean",
-      description: "Toogle to latest on or off",
+      description: "Toggle to Latest on or off",
       initialValue: true,
     }),
     defineField({
@@ -63,11 +63,11 @@ export const blogType = defineType({
       media: "mainImage",
       isLatest: "isLatest",
     },
-    prepare(selection){
-      const {author, isLatest} = selection;
-      return{
+    prepare(selection) {
+      const { author, isLatest } = selection;
+      return {
         ...selection,
-        subtitle: author && `${isLatest ? "latest" : ""} By ${author}`
+        subtitle: author && `${isLatest ? "Latest | " : ""} By ${author}`,
       };
     },
   },

@@ -9,17 +9,17 @@ import { Loader2 } from "lucide-react";
 import NoProductAvailable from "./NoProductAvailable";
 import ProductCard from "./ProductCard";
 import { Product } from "@/sanity.types";
-import { ProductCardProduct } from "./product-types";
 
 const ProductGrid = () => {
-  const [products, setProducts] = useState<ProductCardProduct[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading ] = useState(false);
   const [selectedTab, setSelectedTab] = useState(productType[0]?.title || "");
 
-  const params = {variant: selectedTab.toLowerCase() };
-  const query = `*[ _type == "product" && variant == $variant] | order(name desc){...,"categories":categories[] -> title}`;
-
+  
   useEffect(() => {
+    const params = {variant: selectedTab.toLowerCase() };
+    const query = `*[ _type == "product" && variant == $variant] | order(name desc){...,"categories":categories[] -> title}`;
+    
     const fetchData = async () => {
       setLoading(true);
       try {

@@ -1,6 +1,6 @@
 import Container from '@/components/Container';
 import ImageView from '@/components/ImageView';
-import { getProductsBySlugQuery } from '@/sanity/queries';
+import { getProductBySlug } from '@/sanity/queries';
 import { CornerDownLeft, StarIcon, Truck } from 'lucide-react';
 import PriceView from '@/components/PriceView';
 import AddToCartButton from '@/components/AddToCartButton';
@@ -14,7 +14,7 @@ import ProductMoreDetails from '@/components/ProductMoreDetails';
 
 const page = async({params}: {params: {slug: string}}) => {
   const {slug} = await params;
-  const product = await getProductsBySlugQuery(slug);
+  const product = await getProductBySlug(slug);
 
   return (
     <div className='mx-auto px-4'>

@@ -3,14 +3,14 @@ import { UserIcon } from "@sanity/icons";
 
 export const authorType = defineType({
   name: "author",
-  title: "Authors",
+  title: "Author",
   type: "document",
   icon: UserIcon,
-  fields:[
+  fields: [
     defineField({
       name: "name",
       title: "Author",
-      type: "string"
+      type: "string",
     }),
     defineField({
       name: "slug",
@@ -32,8 +32,8 @@ export const authorType = defineType({
       of: [
         defineArrayMember({
           type: "block",
-          styles:[{title: "Normal", value: "normal"}],
-          lists: []
+          styles: [{ title: "Normal", value: "normal" }],
+          lists: [],
         }),
       ],
     }),
