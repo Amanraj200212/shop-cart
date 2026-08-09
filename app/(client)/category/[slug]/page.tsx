@@ -4,7 +4,7 @@ import { Title } from '@/components/Title';
 import { getCategories } from '@/sanity/queries';
 import React from 'react'
 
-const page = async ({params}: {params: {slug: string}}) => {
+const page = async ({params}: {params: Promise<{slug: string}>}) => {
   const categories = await getCategories();
   const {slug } = await params;
 

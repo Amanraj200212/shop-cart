@@ -1,4 +1,5 @@
 import { sanityFetch } from "../lib/live";
+import type { Category } from "@/sanity.types";
 import {
   BLOG_CATEGORIES,
   BRAND_QUERY,
@@ -12,7 +13,7 @@ import {
   SINGLE_BLOG_QUERY,
 } from "./query";
 
-const getCategories = async (quantity?: number) => {
+const getCategories = async (quantity?: number): Promise<Category[]> => {
   try {
     const query = quantity
       ? `*[_type == 'category'] | order(name asc) [0...$quantity] {
@@ -27,7 +28,7 @@ const getCategories = async (quantity?: number) => {
       query,
       params: quantity ? { quantity } : {},
     });
-    return data;
+    return (data ?? []) as Category[];
   } catch (error) {
     console.log("Error fetching categories", error);
     return [];

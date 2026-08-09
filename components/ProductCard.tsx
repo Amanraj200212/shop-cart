@@ -7,7 +7,16 @@ import PriceView from './PriceView'
 import AddToCartButton from './AddToCartButton'
 import { Product } from '@/sanity.types'
 
-const ProductCard = ({product}: {product : Product}) => {
+type ProductCardProduct = Omit<Product, "categories"> & {
+  categories?: Product["categories"] | Array<string | null> | null;
+};
+
+const ProductCard = ({product}: {product : ProductCardProduct}) => {
+  const categoryNames = product?.categories
+    ?.map((category) => (typeof category === "string" ? category : category?._ref))
+    .filter(Boolean)
+    .join(", ");
+
   return (
     <div className='text-sm border border-darkBlue/20 rounded-md bg-white group'>
       <div className='relative group overflow-hidden bg-shop_light_bg'>
@@ -24,7 +33,7 @@ const ProductCard = ({product}: {product : Product}) => {
             />
           </Link>
         )}
-        <AddToWishListButton product={product} />
+        <AddToWishListButton product={product as Product} />
 
         {/* on product show for normal sale  */}
         {product?.status === "sale" && (
@@ -54,9 +63,9 @@ const ProductCard = ({product}: {product : Product}) => {
 
 
       <div className='p-3 flex flex-col gap-2'>
-        {product?.categories && (
+        {categoryNames && (
           <p className='uppercase line-clamp-1 text-xs font-medium text-shop_light_text'>
-          {product?.categories?.map((category) => category).join(", ")}
+          {categoryNames}
           </p>
         )}
 
@@ -95,7 +104,7 @@ const ProductCard = ({product}: {product : Product}) => {
           className="text-sm"
         />
 
-        <AddToCartButton product={product} className='w-36 rounded-full'/>
+        <AddToCartButton product={product as Product} className='w-36 rounded-full'/>
       </div>
     </div>
   );

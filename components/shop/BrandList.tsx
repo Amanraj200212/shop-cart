@@ -1,18 +1,15 @@
-import { BRAND_QUERY_RESULT } from '@/sanity.types';
+import { BRANDS_QUERY_RESULT } from '@/sanity.types';
 import React from 'react'
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { Label } from '../ui/label';
 
 interface Props{
-  brands: BRAND_QUERY_RESULT ;
+  brands: BRANDS_QUERY_RESULT ;
   selectedBrand?: string | null;
   setSelectedBrand: React.Dispatch<React.SetStateAction<string | null >>
 }
 
 const BrandList = ({brands, selectedBrand, setSelectedBrand} :  Props) => {
-  
-  console.log('brands')
-  console.log(brands)
   return (
     <div className='w-full bg-white p-5'>
       <h2 className="text-none font-semibold ">

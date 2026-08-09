@@ -26,27 +26,6 @@ const CategoryProducts = ({categories, slug}: CategoryProductsProps) => {
     setCurrentSlug(newSlug);
     router.push(`/category/${newSlug}`, {scroll: false});
   };
-
-  // const fetchProducts= async (categorySlug: string) => {
-  //   setLoading(true);
-  //   try{
-  //     const query = `*[_type == "product" && references(*[_type=="category" && slug.current == $categorySlug]._id)] | order(name asc) {..., "categories": categories[]->title}`;
-
-  //     const data = await client.fetch(query, {categorySlug});
-  //     setProducts(data);
-  //     console.log(data);
-  //   } catch (error) {
-  //     console.log("Error in fetching products by category", error);
-  //     setProducts([]);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchProducts(currentSlug)
-  // },[router])
-
   useEffect(() => {
     const fetchProducts = async (categorySlug: string) => {
       setLoading(true);
@@ -65,7 +44,7 @@ const CategoryProducts = ({categories, slug}: CategoryProductsProps) => {
     if(currentSlug) {
       fetchProducts(currentSlug);
     }
-  }, [router])
+  }, [currentSlug])
 
   return (
     <div className='py-5 flex flex-col md:flex-row items-start gap-5'>

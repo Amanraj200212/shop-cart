@@ -6,15 +6,17 @@ import PriceView from '@/components/PriceView';
 import AddToCartButton from '@/components/AddToCartButton';
 import FavoriteBtn from '@/components/FavoriteBtn';
 import ProductCharacteristics from '@/components/ProductCharacteristics';
+import { notFound } from 'next/navigation';
 import {RxBorderSplit} from "react-icons/rx"
 import {FaRegQuestionCircle} from "react-icons/fa"
 import {FiShare2} from "react-icons/fi"
 import {TbTruckDelivery} from "react-icons/tb"
 import ProductMoreDetails from '@/components/ProductMoreDetails';
 
-const page = async({params}: {params: {slug: string}}) => {
+const page = async({params}: {params: Promise<{slug: string}>}) => {
   const {slug} = await params;
   const product = await getProductBySlug(slug);
+  if (!product) notFound();
 
   return (
     <div className='mx-auto px-4'>
