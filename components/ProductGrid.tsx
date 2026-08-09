@@ -9,9 +9,10 @@ import { Loader2 } from "lucide-react";
 import NoProductAvailable from "./NoProductAvailable";
 import ProductCard from "./ProductCard";
 import { Product } from "@/sanity.types";
+import { ProductCardProduct } from "./product-types";
 
 const ProductGrid = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductCardProduct[]>([]);
   const [loading, setLoading ] = useState(false);
   const [selectedTab, setSelectedTab] = useState(productType[0]?.title || "");
 

@@ -33,7 +33,7 @@ const useStore = create<StoreState>()(
         const existingItem  = state.items.find((item) => item.product._id === product._id);
         if(existingItem) {
           return {
-            item: state.items.map((item) => item.product._id === product._id ? {...item, quantity: item.quantity + 1} : item),
+            items: state.items.map((item) => item.product._id === product._id ? {...item, quantity: item.quantity + 1} : item),
           };
         } else {
           return {items: [...state.items, {product, quantity: 1}]};
