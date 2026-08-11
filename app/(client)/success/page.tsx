@@ -3,12 +3,12 @@
 import useStore from "@/store";
 import { useUser } from "@clerk/nextjs"
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { motion } from "motion/react";
 import { Check, Home } from "lucide-react";
 import Link from "next/link";
 
-const SuccessPage = () => {
+const SuccessContent = () => {
   const {user} = useUser();
   const {resetCart} = useStore();
   const searchParams = useSearchParams();
@@ -76,6 +76,14 @@ const SuccessPage = () => {
         </div>
       </motion.div>
     </div>
+  )
+}
+
+const SuccessPage = () => {
+  return (
+    <Suspense fallback={null}>
+      <SuccessContent />
+    </Suspense>
   )
 }
 

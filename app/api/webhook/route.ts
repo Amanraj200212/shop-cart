@@ -21,7 +21,7 @@ export async function POST(req:NextRequest){
   if(!webhookSecret) {
     return NextResponse.json(
       {error: " Stripe webhook secret is not set"},
-      {status: 404}
+      {status: 500}
     );
   }
 
@@ -38,7 +38,9 @@ export async function POST(req:NextRequest){
 
   if(event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session;
-    const invoice = session.invoice ? await stripe.invoices.retrieve(session.invoice as string) : null;
+    const invoice = session.invoice 
+      ? await stripe.invoices.retrieve(session.invoice as string) 
+      : null;
 
     try {
       await createOrderInSanity(session, invoice)
@@ -46,7 +48,7 @@ export async function POST(req:NextRequest){
       console.error("Error creating order in sanity:", error);
       return NextResponse.json(
         {error: `Error creating order: ${error}`},
-        {status: 404}
+        {status: 500}
       );
     }
   }
@@ -57,8 +59,22 @@ async function createOrderInSanity(
   session: Stripe.Checkout.Session,
   invoice: Stripe.Invoice | null
 ) {
-  const {id, amount_total, currency, metadata, payment_intent, total_details} = session;
-  const {orderNumber, customerName, customerEmail,clerkUserId, address} = metadata as unknown as MetaData & {address: string};
+  const {
+    id,
+    amount_total, 
+    currency, 
+    metadata, 
+    payment_intent, 
+    total_details
+  } = session;
+
+  const {
+    orderNumber, 
+    customerName, 
+    customerEmail,
+    clerkUserId, 
+    address
+  } = metadata as unknown as MetaData & {address: string};
   const parsedAddress = address ? JSON.parse(address) : null;
 
   const lineItemsWithProduct = await stripe.checkout.sessions.listLineItems(
