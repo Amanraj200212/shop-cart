@@ -101,9 +101,8 @@ const CartPage = () => {
           <Container >
             {groupedItems?.length ? (
               <>
-                <div className="flex items-center gap-2 py-5">
-                  <ShoppingBagIcon  className="text-darkColor"/>
-                  <Title className="text-black font-semibold pb-3">Shopping Cart</Title>
+                <div className='border-b mb-10'>
+                  <h2 className='text-2xl font-semibold pb-3'>Shopping Cart Itmes </h2>
                 </div>
                 <div className="grid lg:grid-cols-3 md:gap-8">
                   <div className="lg:col-span-2 rounded-lg">
@@ -224,7 +223,7 @@ const CartPage = () => {
                             onClick={handleCheckOut}
                             disabled={isLoading}
                           >
-                            {isLoading ? '' : 'Proceed to checkout'}
+                            {isLoading ? 'Your order is processing...' : 'Proceed to checkout'}
                           </Button>
                         </div>
                       </div>

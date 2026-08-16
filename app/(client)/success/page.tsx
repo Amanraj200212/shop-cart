@@ -34,12 +34,12 @@ const SuccessContent = () => {
           initial={{scale: 0}}
           animate={{scale: 1}}
           transition={{delay: 0.2, type: 'spring', stiffness: 200}}
-          className="w-20 h-20 bg-black rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg"
+          className="w-20 h-20 bg-shop_light_green rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg"
         >
           <Check className="text-white w-10 h-10"/>
         </motion.div>
 
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
+        <h1 className="text-3xl font-bold text-shop_dark_green mb-4">
           Order Confirmed!!
         </h1>
         <div className="space-y-4 mb-4 text-left">

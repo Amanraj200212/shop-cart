@@ -1,15 +1,24 @@
 import Container from "@/components/Container";
-import React from "react";
+import { getSingleBlog } from "@/sanity/queries";
+import Image from "next/image";
+import { notFound } from "next/navigation";
 
 const page = async ({params} : {params: Promise<{slug: string}>}) => {
   const {slug} = await params;
-  return <div>
+  const blog = await getSingleBlog(slug);
+  if(!blog) return notFound();
+
+  return (
+  <div>
     <Container >
-      {/* <h2 className='text-2xl font-semibold  pb-3'>Latest Blog</h2> */}
-      <p>{slug}</p>
-    
+      <div>
+        {/* {blog && (
+
+        )} */}
+      </div>
     </Container>
-    </div>;
+    </div>
+  )
 };
 
 export default page

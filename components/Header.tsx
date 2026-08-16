@@ -6,11 +6,19 @@ import CartIcon from "./CartIcon";
 import FavoriteBtn from "./FavoriteBtn";
 import SignIn from "./SignIn";
 import MobileMenu from "./MobileMenu";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { ClerkLoaded, UserButton } from "@clerk/nextjs";
+import { getMyOrders } from "@/sanity/queries";
+import Link from "next/link";
+import { Logs} from "lucide-react";
 
  const Header = async() =>  {
   const user = await currentUser();
+  const {userId} = await auth();
+  let orders = null;
+  if(userId) {
+    orders = await getMyOrders(userId);
+  }
   
   return (
     <header className= "bg-white/70 py-5 sticky top-0 z-50 backdrop-blur-md">
@@ -31,11 +39,13 @@ import { ClerkLoaded, UserButton } from "@clerk/nextjs";
           <FavoriteBtn />
 
           <ClerkLoaded>
-            {/* {user ? <UserButton /> : <SignIn />} */} 
+              <Link href="/orders" className=" group relative">
+                <Logs className="w-5 h-5 hover:text-shop_light_green hoverEffect"/>
+                <span className="absolute -top-1 -right-1 bg-shop_dark_green text-white text-xs font-semibold rounded-full w-3.5 h-3.5 flex items-center justify-center">{orders?.length ? orders?.length : 0}</span>
+              </Link>
               <UserButton />
           </ClerkLoaded>
           {!user && <SignIn />}
-
         </div>
       </Container>
     </header>
