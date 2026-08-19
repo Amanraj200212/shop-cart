@@ -27,11 +27,12 @@ const FavoriteBtn = ({showProduct = false, product} : {
   return (
     <>
      {!showProduct ? (
-      <Link href="/wishlist" className=" group relative">
-        <Heart className="w-5 h-5 hover:text-shop_light_green hoverEffect"/>
-        <span 
-          className="absolute -top-1 -right-1 bg-shop_dark_green text-white text-xs font-semibold rounded-full w-3.5 h-3.5 flex items-center justify-center"
-        >
+      <Link href='/wishlist' className='flex items-center justify-between'>
+        <span className='flex items-center gap-2'>
+          <Heart className="w-5 h-5 hover:text-shop_light_green hoverEffect"/> 
+          Wishlist
+        </span>
+        <span className='rounded-full bg-shop_light_green/20 px-2 py-0.5 text-xs font-semibold text-shop_dark_green'>
           {favoriteProduct?.length ? favoriteProduct?.length: 0}
         </span>
       </Link>
