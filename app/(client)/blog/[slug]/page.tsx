@@ -1,5 +1,4 @@
 import Container from "@/components/Container";
-import { Title } from "@/components/Title";
 import { urlFor } from "@/sanity/lib/image";
 import {
   getBlogCategories,
@@ -24,8 +23,8 @@ const SingleBlogPage = async ({
 
   return (
     <div className="py-10">
-      <Container className="grid  grid-cols-2 gap-5">
-        <div className="md:col-span-2">
+      <Container className=" mx-auto px-4 grid grid-cols-1 lg:grid-cols-4 gap-5">
+        <div className="md:col-span-3">
           {blog?.mainImage && (
             <Image
               src={urlFor(blog?.mainImage).url()}
@@ -161,7 +160,7 @@ const SingleBlogPage = async ({
                             }
                             return (
                               <Link
-                                href={value.href}
+                                href='/blog'
                                 className="font-medium text-gray-950 underline decoration-gray-400 underline-offset-4 data-hover:decoration-gray-600"
                               >
                                 {children}
@@ -198,7 +197,7 @@ const BlogLeft = async ({ slug }: { slug: string }) => {
   return (
     <div>
       <div className="border border-lightColor p-5 rounded-md">
-        <Title className="text-base">Blog Categories</Title>
+        <h2 className="text-shop_dark_green font-semibold">Blog Categories</h2>
         <div className="space-y-2 mt-2">
           {categories?.map(({ blogcategories }, index) => (
             <div
@@ -211,8 +210,9 @@ const BlogLeft = async ({ slug }: { slug: string }) => {
           ))}
         </div>
       </div>
+
       <div className="border border-lightColor p-5 rounded-md mt-10">
-        <Title className="text-base">Latest Blogs</Title>
+        <h2 className="text-shop_dark_green font-semibold">Latest Blogs</h2>
         <div className="space-y-4 mt-4">
           {blogs?.map((blog, index) => (
             <Link
