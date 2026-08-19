@@ -22,7 +22,7 @@ const OrderDetailDialogs: React.FC<OrderDetailsDailogsProps> = ({
   if(!order) return null;
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className='max-w-4xl! max-h-[90vh] overflow-y-scroll'>
+      <DialogContent className='max-h-[90vh] overflow-y-scroll sm:max-w-4xl'>
         <DialogHeader>
           <DialogTitle>
             Order Details - {order?.orderNumber}
@@ -68,7 +68,7 @@ const OrderDetailDialogs: React.FC<OrderDetailsDailogsProps> = ({
         </div>
         <Table className='w-full'>
           <TableHeader>
-            <TableRow>
+            <TableRow className='bg-black/10'>
               <TableHead>Product</TableHead>
               <TableHead>Quantity</TableHead>
               <TableHead>Price</TableHead>
@@ -102,7 +102,7 @@ const OrderDetailDialogs: React.FC<OrderDetailsDailogsProps> = ({
             ))}
           </TableBody>
         </Table>
-        <div className='mt-4 text-right flex items-center justify-end'>
+        <div className='mt-4 bg-black/5 rounded-md p-2.5 text-right flex items-center justify-end'>
             <div className='w-full flex flex-col gap-1'>
               {order?.amountDiscount !== 0 && (
                 <div className='w-full flex items-center justify-between'>

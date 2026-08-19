@@ -7,7 +7,6 @@ import EmptyCart from "@/components/EmptyCart";
 import NoAccess from "@/components/NoAccess";
 import PriceFormatter from "@/components/PriceFormatter";
 import QuantityButton from "@/components/QuantityButton";
-import { Title } from "@/components/Title";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -19,7 +18,7 @@ import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import useStore from "@/store";
 import { useAuth, useUser } from "@clerk/nextjs";
-import { ShoppingBagIcon, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState }from "react";
@@ -32,10 +31,8 @@ const CartPage = () => {
     getItemCount, 
     getSubTotalPrice, 
     resetCart,
-    getGroupedItems,
   } = useStore();
 
-  const [isClient, setIsClient] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const groupedItems = useStore((state) => state.getGroupedItems());
   const {isSignedIn} = useAuth();
@@ -151,7 +148,7 @@ const CartPage = () => {
                                 <div className="flex items-center gap-2">
                                   <TooltipProvider>
                                     <Tooltip>
-                                      <TooltipTrigger>
+                                      <TooltipTrigger asChild>
                                         <AddToWishListButton 
                                           product={product} 
                                           className="relative top-0 right-0"
@@ -162,7 +159,7 @@ const CartPage = () => {
                                       </TooltipContent>
                                     </Tooltip>
                                     <Tooltip>
-                                      <TooltipTrigger>
+                                      <TooltipTrigger asChild>
                                         <Trash 
                                           onClick={() =>{ 
                                             deleteCartProduct(product?._id);
