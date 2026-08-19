@@ -17,21 +17,15 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      {/* <html
-        lang="en"
-      >
-        <body > */}
-          <div className="flex min-h-screen flex-col">
-            <div className="sticky top-0 z-50">
-              <Header />
-            </div>
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
-          </div>
-        {/* </body>
-      </html> */}
+      <div className="flex min-h-screen flex-col">
+        <div className="sticky top-0 z-50">
+          <Header />
+        </div>
+        <main className="flex-1">
+          {children}
+        </main>
+        <Footer />
+      </div>
     </ClerkProvider>
 
   );
