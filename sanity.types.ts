@@ -23,6 +23,7 @@ export type Address = {
   _rev: string;
   name?: string;
   email?: string;
+  phone?: string;
   address?: string;
   city?: string;
   state?: string;
@@ -436,6 +437,36 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint;
 
+// Source: app/search/page.tsx
+// Variable: SEARCH_PRODUCTS_QUERY
+// Query: *[    _type == "product" &&    (      name match $searchTerm ||      description match $searchTerm ||      brand->title match $searchTerm ||      count(categories[@->title match $searchTerm]) > 0    )  ] | order(name asc) {    ...,    "categories": categories[]->title  }
+export type SEARCH_PRODUCTS_QUERY_RESULT = Array<{
+  _id: string;
+  _type: "product";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  slug?: Slug;
+  images?: Array<{
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+    _key: string;
+  }>;
+  description?: string;
+  price?: number;
+  discount?: number;
+  categories: Array<string | null> | null;
+  stock?: number;
+  brand?: BrandReference;
+  status?: "hot" | "new" | "sale";
+  variant?: "appliances" | "gadget" | "others" | "refrigerators";
+  isFeatured?: boolean;
+}>;
+
 // Source: sanity/queries/query.ts
 // Variable: BRANDS_QUERY
 // Query: *[_type=='brand'] | order(name asc)
@@ -741,6 +772,7 @@ export type OTHERS_BLOG_QUERY_RESULT = Array<{
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
+    '\n  *[\n    _type == "product" &&\n    (\n      name match $searchTerm ||\n      description match $searchTerm ||\n      brand->title match $searchTerm ||\n      count(categories[@->title match $searchTerm]) > 0\n    )\n  ] | order(name asc) {\n    ...,\n    "categories": categories[]->title\n  }\n': SEARCH_PRODUCTS_QUERY_RESULT;
     "*[_type=='brand'] | order(name asc) ": BRANDS_QUERY_RESULT;
     " *[_type == 'blog' && isLatest == true]|order(name asc){\n      ...,\n      blogcategories[]->{\n      title\n    }\n    }": LATEST_BLOG_QUERY_RESULT;
     "*[_type == 'product' && status == 'hot'] | order(name asc){\n    ...,\"categories\": categories[]->title\n  }": DEAL_PRODUCTS_RESULT;

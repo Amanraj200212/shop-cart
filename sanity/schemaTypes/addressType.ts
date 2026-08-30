@@ -51,14 +51,14 @@ export const addressType = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "pinCode",
+      name: "zip",
       title: "Pin Code",
       type: "string",
       description: "Format: 84141xx or 1200xx",
       validation: (Rule) =>
         Rule.required().regex(/^[1-9][0-9]{5}$/, {
-          name: "pinCode",
-        })
+          name: "zip",
+        }),
     }),
     defineField({
       name: "default",
