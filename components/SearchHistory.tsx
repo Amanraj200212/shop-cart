@@ -35,11 +35,11 @@ const SearchHistory = () => {
     <div className="w-full h-full overflow-y-scroll border border-dark-color/20 rounded-md">
       <div>
         <div className="py-5 px-3 bg-shop_dark_green/10 font-semibold tracking-wide">
-          <p className="text-shop_light_text flex items-center gap-1">
+          <div className="text-shop_light_text flex items-center gap-1">
             <Search />
-            Search and explore your products from 
-            <Logo/>
-          </p>
+            <span>Search and explore your products from</span>
+            <Logo />
+          </div>
         </div>
         <div className="space-y-2 flex flex-col my-5">
           {searchData.map((search, index) => (
