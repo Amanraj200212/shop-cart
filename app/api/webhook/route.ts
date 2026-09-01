@@ -1,4 +1,4 @@
-import { MetaData } from "@/actions/createCheckoutSession";
+import { MetaData, ShippingAddressSnapshot } from "@/actions/createCheckoutSession";
 import { backendClient } from "@/lib/backendClient";
 import stripe from "@/lib/strips";
 import { headers } from "next/headers";
@@ -75,7 +75,7 @@ async function createOrderInSanity(
     clerkUserId, 
     address
   } = metadata as unknown as MetaData & {address: string};
-  const parsedAddress = address ? JSON.parse(address) : null;
+  const parsedAddress = address ? (JSON.parse(address) as ShippingAddressSnapshot | null) : null;
 
   const lineItemsWithProduct = await stripe.checkout.sessions.listLineItems(
     id,
@@ -130,11 +130,18 @@ async function createOrderInSanity(
       : null,
     address: parsedAddress
       ? {
-          state: parsedAddress.state,
-          zip: parsedAddress.zip,
-          city: parsedAddress.city,
+          fullName: parsedAddress.fullName,
+          email: parsedAddress.email,
+          phone: parsedAddress.phone,
           address: parsedAddress.address,
-          name: parsedAddress.name,
+          addressLine2: parsedAddress.addressLine2,
+          city: parsedAddress.city,
+          state: parsedAddress.state,
+          pinCode: parsedAddress.pinCode,
+          zip: parsedAddress.pinCode,
+          country: parsedAddress.country,
+          latitude: parsedAddress.latitude,
+          longitude: parsedAddress.longitude,
         }
       : null,
   });

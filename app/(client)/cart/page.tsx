@@ -2,26 +2,23 @@
 
 import createCheckoutSession, { MetaData } from "@/actions/createCheckoutSession";
 import AddToWishListButton from "@/components/AddToWishListButton";
+import CheckoutAddressSelector from "@/components/address/CheckoutAddressSelector";
 import Container from "@/components/Container";
 import EmptyCart from "@/components/EmptyCart";
 import NoAccess from "@/components/NoAccess";
 import PriceFormatter from "@/components/PriceFormatter";
 import QuantityButton from "@/components/QuantityButton";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Address } from "@/sanity.types";
-import { client } from "@/sanity/lib/client";
+import { AddressDocument, toShippingAddressSnapshot } from "@/lib/address";
 import { urlFor } from "@/sanity/lib/image";
 import useStore from "@/store";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { Trash } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState }from "react";
+import React, { useState }from "react";
 import toast from "react-hot-toast";
 
 const CartPage = () => {
@@ -37,30 +34,7 @@ const CartPage = () => {
   const groupedItems = useStore((state) => state.getGroupedItems());
   const {isSignedIn} = useAuth();
   const {user} = useUser();
-  const [addressess, setAddressess] = useState<Address[] | null>(null);
-  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
-
-  useEffect(() => {
-    const fetchAddressess = async() => {
-      setIsLoading(true);
-      try {
-        const query = `*[_type == "address"] | order(publishedAt desc)`;
-        const data = await client.fetch(query);
-        setAddressess(data);
-        const defaultAddress = data.find((addr: Address) => addr.default);
-        if(defaultAddress) {
-          setSelectedAddress(defaultAddress);
-        } else if(data.length > 0) {
-          setSelectedAddress(data[0]);
-        }
-      } catch (error) {
-        console.error('Error in fetching Address' , error)
-      } finally{
-        setIsLoading(false);
-      }
-    }
-    fetchAddressess();
-  }, []);
+  const [selectedAddress, setSelectedAddress] = useState<AddressDocument | null>(null);
 
   const handleResetCart = () => {
     const confirmed = window.confirm('Are you sure you want to reset your cart?');
@@ -71,6 +45,11 @@ const CartPage = () => {
   }
 
   const handleCheckOut = async() => {
+    if (!selectedAddress) {
+      toast.error("Please select or add a delivery address");
+      return;
+    }
+
     setIsLoading(true);
     try {
       const metaData: MetaData = {
@@ -78,7 +57,7 @@ const CartPage = () => {
         customerName: user?.fullName ?? "Unknown",
         customerEmail: user?.emailAddresses[0]?.emailAddress ?? "Unknown",
         clerkUserId: user?.id,
-        address: selectedAddress,
+        address: toShippingAddressSnapshot(selectedAddress),
       };
       const checkOutUrl = await createCheckoutSession(groupedItems, metaData);
       if(checkOutUrl){
@@ -224,45 +203,14 @@ const CartPage = () => {
                           </Button>
                         </div>
                       </div>
-                        {addressess && (
-                          <div className="bg-white rounded-md mt-5">
-                            <Card>
-                              <CardHeader>
-                                <CardTitle>
-                                  Delivery Address
-                                </CardTitle>
-                              </CardHeader>
-                              <CardContent>
-                                <RadioGroup defaultValue={addressess?.find((addr) => addr.default)?._id.toString()}>
-                                  {addressess?.map((address) => (
-                                    <div 
-                                      key={address._id}
-                                      onClick={() => setSelectedAddress(address)}
-                                      className={`flex items-center space-x-2 mb-4 cursor-pointer ${selectedAddress?._id === address?._id && 'text-shop_dark_green'}`}
-                                    >
-                                      <RadioGroupItem value={address?._id.toString()} />
-                                      <Label 
-                                        htmlFor={`address-${address?._id}`}
-                                        className="grid gap-1.5 flex-1"
-                                      >
-                                        <span className="font-semibold">{address?.name}</span>
-                                        <span className="text-sm text-black/60">
-                                          {address?.address},{address?.city},{" "}{address?.state} {address?.zip}
-                                        </span>
-                                      </Label>
-                                    </div>
-                                  ))}
-                                </RadioGroup>
-                                <Button 
-                                  variant='outline' 
-                                  className="w-fulll mt-4"
-                                >
-                                  + Add New Address
-                                </Button>
-                              </CardContent>
-                            </Card>
-                          </div>
-                        )}
+                        <div className="mt-5">
+                          <CheckoutAddressSelector
+                            selectedAddress={selectedAddress}
+                            onSelectAddress={setSelectedAddress}
+                            defaultEmail={user?.primaryEmailAddress?.emailAddress}
+                            defaultFullName={user?.fullName || ""}
+                          />
+                        </div>
                     </div>
                   </div>
                       {/* FOR MOBILE VIEW OF ORDER SUMMARY */}

@@ -8,11 +8,33 @@ export const addressType = defineType({
   icon: HomeIcon,
   fields: [
     defineField({
-      name: "name",
-      title: "Address Name",
+      name: "userId",
+      title: "Clerk User ID",
       type: "string",
-      description: "A friendly name for this address (e.g. Home, Work)",
-      validation: (Rule) => Rule.required().max(50),
+      readOnly: true,
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "name",
+      title: "Address Label",
+      type: "string",
+      description: "A friendly label for this address.",
+      options: {
+        list: [
+          { title: "Home", value: "Home" },
+          { title: "Work", value: "Work" },
+          { title: "Other", value: "Other" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "Home",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "fullName",
+      title: "Full Name",
+      type: "string",
+      validation: (Rule) => Rule.required().max(100),
     }),
     defineField({
       name: "email",
@@ -31,10 +53,17 @@ export const addressType = defineType({
     }),
     defineField({
       name: "address",
-      title: "Street Address",
+      title: "Address Line 1",
       type: "string",
       description: "The street address including house number and street name",
-      validation: (Rule) => Rule.required().min(5).max(100),
+      validation: (Rule) => Rule.required().min(5).max(150),
+    }),
+    defineField({
+      name: "addressLine2",
+      title: "Address Line 2",
+      type: "string",
+      description: "Apartment, floor, landmark, or other delivery detail",
+      validation: (Rule) => Rule.max(150),
     }),
     defineField({
       name: "city",
@@ -51,14 +80,31 @@ export const addressType = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "zip",
+      name: "pinCode",
       title: "Pin Code",
       type: "string",
-      description: "Format: 84141xx or 1200xx",
+      description: "Indian PIN code. Exactly 6 digits and cannot start with 0.",
       validation: (Rule) =>
         Rule.required().regex(/^[1-9][0-9]{5}$/, {
-          name: "zip",
+          name: "pinCode",
         }),
+    }),
+    defineField({
+      name: "zip",
+      title: "Pin Code (Deprecated)",
+      type: "string",
+      readOnly: true,
+      hidden: ({ value }) => value === undefined,
+      deprecated: {
+        reason: "Use pinCode instead. This field is kept only for existing address data.",
+      },
+    }),
+    defineField({
+      name: "country",
+      title: "Country",
+      type: "string",
+      initialValue: "India",
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "default",
@@ -73,25 +119,38 @@ export const addressType = defineType({
       type: "datetime",
       initialValue: () => new Date().toISOString(),
     }),
+    defineField({
+      name: "latitude",
+      title: "Latitude",
+      type: "number",
+      validation: (Rule) => Rule.min(-90).max(90),
+    }),
+    defineField({
+      name: "longitude",
+      title: "Longitude",
+      type: "number",
+      validation: (Rule) => Rule.min(-180).max(180),
+    }),
   ],
 
   //santiy stdio me preview ke liye
   preview: {
     select: {
       title: "name",
+      fullName: "fullName",
       address: "address",
       city: "city",
       state: "state",
       isDefault: "default",
     },
 
-    prepare({ title, address, city, state, isDefault }) {
+    prepare({ title, fullName, address, city, state, isDefault }) {
       const location = [address, city, state]
         .filter(Boolean)
         .join(", ");
 
       return {
-        title: `${title || "Unnamed Address"}${
+        title: `${title || "Unnamed Address"}${fullName ? ` - ${fullName}` : ""}${
           isDefault ? " (Default)" : ""
         }`,
         subtitle: location,

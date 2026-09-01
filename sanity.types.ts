@@ -21,15 +21,22 @@ export type Address = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  name?: string;
+  userId?: string;
+  name?: "Home" | "Work" | "Other";
+  fullName?: string;
   email?: string;
   phone?: string;
   address?: string;
+  addressLine2?: string;
   city?: string;
   state?: string;
+  pinCode?: string;
   zip?: string;
+  country?: string;
   default?: boolean;
   createdAt?: string;
+  latitude?: number;
+  longitude?: number;
 };
 
 export type Blogcategory = {
@@ -211,11 +218,18 @@ export type Order = {
   currency?: string;
   amountDiscount?: number;
   address?: {
+    fullName?: string;
+    email?: string;
+    phone?: string;
     state?: string;
+    pinCode?: string;
     zip?: string;
     city?: string;
     address?: string;
-    name?: string;
+    addressLine2?: string;
+    country?: string;
+    latitude?: number;
+    longitude?: number;
   };
   status?:
     | "pending"
@@ -645,11 +659,18 @@ export type MY_ORDERS_QUERY_RESULT = Array<{
   currency?: string;
   amountDiscount?: number;
   address?: {
+    fullName?: string;
+    email?: string;
+    phone?: string;
     state?: string;
+    pinCode?: string;
     zip?: string;
     city?: string;
     address?: string;
-    name?: string;
+    addressLine2?: string;
+    country?: string;
+    latitude?: number;
+    longitude?: number;
   };
   status?:
     | "cancelled"
@@ -768,6 +789,59 @@ export type OTHERS_BLOG_QUERY_RESULT = Array<{
   categories: null;
 }>;
 
+// Source: sanity/queries/query.ts
+// Variable: USER_ADDRESSES_QUERY
+// Query: *[_type == "address" && userId == $userId] | order(default desc, createdAt desc) {    _id,  _type,  userId,  name,  fullName,  email,  phone,  address,  addressLine2,  city,  state,  pinCode,  zip,  country,  default,  latitude,  longitude,  createdAt}
+export type USER_ADDRESSES_QUERY_RESULT = Array<{
+  _id: string;
+  _type: "address";
+  userId: string | null;
+  name: "Home" | "Other" | "Work" | null;
+  fullName: string | null;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+  addressLine2: string | null;
+  city: string | null;
+  state: string | null;
+  pinCode: string | null;
+  zip: string | null;
+  country: string | null;
+  default: boolean | null;
+  latitude: number | null;
+  longitude: number | null;
+  createdAt: string | null;
+}>;
+
+// Source: sanity/queries/query.ts
+// Variable: USER_ADDRESS_BY_ID_QUERY
+// Query: *[_type == "address" && _id == $id && userId == $userId][0] {    _id,  _type,  userId,  name,  fullName,  email,  phone,  address,  addressLine2,  city,  state,  pinCode,  zip,  country,  default,  latitude,  longitude,  createdAt}
+export type USER_ADDRESS_BY_ID_QUERY_RESULT = {
+  _id: string;
+  _type: "address";
+  userId: string | null;
+  name: "Home" | "Other" | "Work" | null;
+  fullName: string | null;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+  addressLine2: string | null;
+  city: string | null;
+  state: string | null;
+  pinCode: string | null;
+  zip: string | null;
+  country: string | null;
+  default: boolean | null;
+  latitude: number | null;
+  longitude: number | null;
+  createdAt: string | null;
+} | null;
+
+// Source: sanity/queries/query.ts
+// Variable: USER_DEFAULT_ADDRESS_IDS_QUERY
+// Query: *[_type == "address" && userId == $userId && default == true && (!defined($exceptId) || _id != $exceptId)]._id
+export type USER_DEFAULT_ADDRESS_IDS_QUERY_RESULT = Array<string>;
+
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
@@ -783,5 +857,8 @@ declare module "@sanity/client" {
     '*[_type == "blog" && slug.current == $slug][0]{\n  ..., \n    author->{\n    name,\n    image,\n  },\n  blogcategories[]->{\n    title,\n    "slug": slug.current,\n  },\n}': SINGLE_BLOG_QUERY_RESULT;
     '*[_type == "blog"]{\n     blogcategories[]->{\n    ...\n    }\n  }': BLOG_CATEGORIES_RESULT;
     '*[\n  _type == "blog"\n  && defined(slug.current)\n  && slug.current != $slug\n]|order(publishedAt desc)[0...$quantity]{\n...\n  publishedAt,\n  title,\n  mainImage,\n  slug,\n  author->{\n    name,\n    image,\n  },\n  categories[]->{\n    title,\n    "slug": slug.current,\n  }\n}': OTHERS_BLOG_QUERY_RESULT;
+    '*[_type == "address" && userId == $userId] | order(default desc, createdAt desc) {\n  \n  _id,\n  _type,\n  userId,\n  name,\n  fullName,\n  email,\n  phone,\n  address,\n  addressLine2,\n  city,\n  state,\n  pinCode,\n  zip,\n  country,\n  default,\n  latitude,\n  longitude,\n  createdAt\n\n}': USER_ADDRESSES_QUERY_RESULT;
+    '*[_type == "address" && _id == $id && userId == $userId][0] {\n  \n  _id,\n  _type,\n  userId,\n  name,\n  fullName,\n  email,\n  phone,\n  address,\n  addressLine2,\n  city,\n  state,\n  pinCode,\n  zip,\n  country,\n  default,\n  latitude,\n  longitude,\n  createdAt\n\n}': USER_ADDRESS_BY_ID_QUERY_RESULT;
+    '*[_type == "address" && userId == $userId && default == true && (!defined($exceptId) || _id != $exceptId)]._id': USER_DEFAULT_ADDRESS_IDS_QUERY_RESULT;
   }
 }

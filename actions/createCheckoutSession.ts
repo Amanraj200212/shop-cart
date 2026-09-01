@@ -1,17 +1,30 @@
 'use server'
 
 import stripe from "@/lib/strips";
-import { Address } from "@/sanity.types";
 import { urlFor } from "@/sanity/lib/image";
 import { CartItem } from "@/store";
 import type Stripe from "stripe";
+
+export interface ShippingAddressSnapshot {
+  fullName: string;
+  email: string;
+  phone: string;
+  address: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  pinCode: string;
+  country: string;
+  latitude?: number;
+  longitude?: number;
+}
 
 export interface MetaData {
   orderNumber: string;
   customerName: string;
   customerEmail: string;
   clerkUserId?: string;
-  address?: Address | null;
+  address?: ShippingAddressSnapshot | null;
 }
 
 export interface GroupedCartItem {

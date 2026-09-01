@@ -81,6 +81,40 @@ const OTHERS_BLOG_QUERY = defineQuery(`*[
     "slug": slug.current,
   }
 }`);
+
+const ADDRESS_FIELDS = `
+  _id,
+  _type,
+  userId,
+  name,
+  fullName,
+  email,
+  phone,
+  address,
+  addressLine2,
+  city,
+  state,
+  pinCode,
+  zip,
+  country,
+  default,
+  latitude,
+  longitude,
+  createdAt
+`;
+
+const USER_ADDRESSES_QUERY = defineQuery(`*[_type == "address" && userId == $userId] | order(default desc, createdAt desc) {
+  ${ADDRESS_FIELDS}
+}`);
+
+const USER_ADDRESS_BY_ID_QUERY = defineQuery(`*[_type == "address" && _id == $id && userId == $userId][0] {
+  ${ADDRESS_FIELDS}
+}`);
+
+const USER_DEFAULT_ADDRESS_IDS_QUERY = defineQuery(
+  `*[_type == "address" && userId == $userId && default == true && (!defined($exceptId) || _id != $exceptId)]._id`
+);
+
 export {
   BRANDS_QUERY,
   LATEST_BLOG_QUERY,
@@ -92,4 +126,7 @@ export {
   SINGLE_BLOG_QUERY,
   BLOG_CATEGORIES,
   OTHERS_BLOG_QUERY,
+  USER_ADDRESSES_QUERY,
+  USER_ADDRESS_BY_ID_QUERY,
+  USER_DEFAULT_ADDRESS_IDS_QUERY,
 };
