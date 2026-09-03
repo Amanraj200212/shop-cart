@@ -1,6 +1,7 @@
 'use server'
 
 import stripe from "@/lib/strips";
+import { DeliveryMethod } from "@/lib/delivery";
 import { urlFor } from "@/sanity/lib/image";
 import { CartItem } from "@/store";
 import type Stripe from "stripe";
@@ -23,7 +24,9 @@ export interface MetaData {
   orderNumber: string;
   customerName: string;
   customerEmail: string;
+  customerPhone?: string;
   clerkUserId?: string;
+  deliveryMethod: DeliveryMethod;
   address?: ShippingAddressSnapshot | null;
 }
 
@@ -44,7 +47,9 @@ const createCheckoutSession = async(items: GroupedCartItem[], metadata: MetaData
         orderNumber: metadata.orderNumber,
         customerName: metadata.customerName,
         customerEmail: metadata.customerEmail,
+        customerPhone: metadata.customerPhone ?? "",
         clerkUserId: metadata.clerkUserId ?? "",
+        deliveryMethod: metadata.deliveryMethod,
         address: JSON.stringify(metadata.address),
       },
       customer: customerId,

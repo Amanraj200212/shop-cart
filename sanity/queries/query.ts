@@ -26,7 +26,14 @@ const BRAND_QUERY = defineQuery(`*[_type == "product" && slug.current == $slug]{
   }`);
 
 const MY_ORDERS_QUERY =
-  defineQuery(`*[_type == 'order' && clerkUserId == $userId] | order(orderData desc){
+  defineQuery(`*[_type == 'order' && clerkUserId == $userId] | order(orderDate desc){
+...,products[]{
+  ...,product->
+}
+}`);
+
+const ALL_ORDERS_QUERY =
+  defineQuery(`*[_type == 'order'] | order(orderDate desc){
 ...,products[]{
   ...,product->
 }
@@ -122,6 +129,7 @@ export {
   PRODUCT_BY_SLUG_QUERY,
   BRAND_QUERY,
   MY_ORDERS_QUERY,
+  ALL_ORDERS_QUERY,
   GET_ALL_BLOG,
   SINGLE_BLOG_QUERY,
   BLOG_CATEGORIES,

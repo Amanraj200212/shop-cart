@@ -52,6 +52,11 @@ export const orderType = defineType({
       validation: (Rule) => Rule.required().email(),
     }),
     defineField({
+      name: "customerPhone",
+      title: "Customer Phone",
+      type: "string",
+    }),
+    defineField({
       name: "stripePaymentIntentId",
       title: "Stripe Payment Intent ID",
       type: "string",
@@ -120,6 +125,7 @@ export const orderType = defineType({
       name: "address",
       title: "Shipping Address",
       type: "object",
+      hidden: ({ document }) => document?.deliveryMethod === "pickup",
       fields: [
         defineField({ name: "fullName", title: "Full Name", type: "string" }),
         defineField({ name: "email", title: "Email", type: "string" }),
@@ -146,7 +152,7 @@ export const orderType = defineType({
     }),
     defineField({
       name: "status",
-      title: "Order Status",
+      title: "Payment Status",
       type: "string",
       options: {
         list: [
@@ -159,6 +165,64 @@ export const orderType = defineType({
           { title: "Cancelled", value: "cancelled" },
         ],
       },
+    }),
+    defineField({
+      name: "deliveryMethod",
+      title: "Delivery Method",
+      type: "string",
+      initialValue: "pickup",
+      options: {
+        list: [
+          { title: "Home Delivery", value: "delivery" },
+          { title: "Store Pickup", value: "pickup" },
+        ],
+        layout: "radio",
+      },
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "orderStatus",
+      title: "Order Status",
+      type: "string",
+      initialValue: "pending",
+      options: {
+        list: [
+          { title: "Pending", value: "pending" },
+          { title: "Confirmed", value: "confirmed" },
+          { title: "Preparing", value: "preparing" },
+          { title: "Out for Delivery", value: "out_for_delivery" },
+          { title: "Delivered", value: "delivered" },
+          { title: "Ready for Pickup", value: "ready_for_pickup" },
+          { title: "Picked Up", value: "picked_up" },
+          { title: "Cancelled", value: "cancelled" },
+        ],
+      },
+      validation: (Rule) =>
+        Rule.required().custom((status, context) => {
+          const deliveryMethod = context.document?.deliveryMethod;
+          const deliveryStatuses = [
+            "pending",
+            "confirmed",
+            "preparing",
+            "out_for_delivery",
+            "delivered",
+            "cancelled",
+          ];
+          const pickupStatuses = [
+            "pending",
+            "confirmed",
+            "preparing",
+            "ready_for_pickup",
+            "picked_up",
+            "cancelled",
+          ];
+          const allowedStatuses =
+            deliveryMethod === "delivery" ? deliveryStatuses : pickupStatuses;
+
+          return allowedStatuses.includes(status || "")
+            ? true
+            : "This order status is not valid for the selected delivery method.";
+        }),
     }),
     defineField({
       name: "orderDate",

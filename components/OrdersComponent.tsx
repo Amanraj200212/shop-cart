@@ -5,10 +5,12 @@ import { TableBody, TableCell, TableRow } from './ui/table'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip'
 import PriceFormatter from './PriceFormatter'
 import {format} from 'date-fns'
-import { Trash} from 'lucide-react'
+import { Bike, Store, Trash} from 'lucide-react'
 import { useState } from 'react'
 import OrderDetailDialogs from './OrderDetailDialogs'
 import toast from 'react-hot-toast'
+import { Badge } from './ui/badge'
+import { DeliveryMethod, getDeliveryMethodLabel } from '@/lib/delivery'
 
 const OrdersComponent = ({orders}: {orders: MY_ORDERS_QUERY_RESULT}) => {
   const [selectedOrder, setSelectedOrder] = useState<MY_ORDERS_QUERY_RESULT[number] | null>(null);
@@ -56,6 +58,24 @@ const OrdersComponent = ({orders}: {orders: MY_ORDERS_QUERY_RESULT}) => {
                         {order.status.toUpperCase()}
                       </span>
                     )}
+                  </TableCell>
+                  <TableCell className='font-medium hidden md:table-cell'>
+                    <Badge
+                      variant='outline'
+                      className='gap-1 border-shop_light_green/40 text-shop_dark_green'
+                    >
+                      {order.deliveryMethod === "delivery" ? (
+                        <Bike className='size-3' />
+                      ) : (
+                        <Store className='size-3' />
+                      )}
+                      {getDeliveryMethodLabel(order.deliveryMethod as DeliveryMethod)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className='font-medium hidden md:table-cell capitalize'>
+                    {order.orderStatus
+                      ? order.orderStatus.replaceAll("_", " ")
+                      : "Pending"}
                   </TableCell>
                   <TableCell className='font-medium hidden md:table-cell'>
                     {order?.invoice && (

@@ -58,6 +58,12 @@ const OrderPage = async() => {
                         Status
                       </TableHead>
                       <TableHead className='hidden md:table-cell font-semibold'>
+                        Delivery
+                      </TableHead>
+                      <TableHead className='hidden md:table-cell font-semibold'>
+                        Order Status
+                      </TableHead>
+                      <TableHead className='hidden md:table-cell font-semibold'>
                         Invoice
                       </TableHead>
                       <TableHead className='text-center font-semibold'>

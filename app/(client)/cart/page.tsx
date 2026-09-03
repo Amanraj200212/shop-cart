@@ -4,21 +4,25 @@ import createCheckoutSession, { MetaData } from "@/actions/createCheckoutSession
 import AddToWishListButton from "@/components/AddToWishListButton";
 import CheckoutAddressSelector from "@/components/address/CheckoutAddressSelector";
 import Container from "@/components/Container";
+import DeliveryMethodSelector from "@/components/DeliveryMethodSelector";
 import EmptyCart from "@/components/EmptyCart";
 import NoAccess from "@/components/NoAccess";
+import PickupContactForm from "@/components/PickupContactForm";
+import PickupInformation from "@/components/PickupInformation";
 import PriceFormatter from "@/components/PriceFormatter";
 import QuantityButton from "@/components/QuantityButton";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { AddressDocument, toShippingAddressSnapshot } from "@/lib/address";
+import { DeliveryMethod, qualifiesForDelivery } from "@/lib/delivery";
 import { urlFor } from "@/sanity/lib/image";
 import useStore from "@/store";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { Trash } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState }from "react";
+import React, { useEffect, useState }from "react";
 import toast from "react-hot-toast";
 
 const CartPage = () => {
@@ -35,6 +39,28 @@ const CartPage = () => {
   const {isSignedIn} = useAuth();
   const {user} = useUser();
   const [selectedAddress, setSelectedAddress] = useState<AddressDocument | null>(null);
+  const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("pickup");
+  const [pickupFullName, setPickupFullName] = useState(user?.fullName || "");
+  const [pickupPhone, setPickupPhone] = useState(user?.primaryPhoneNumber?.phoneNumber || "");
+  const subtotal = getTotalPrice();
+  const canDeliver = qualifiesForDelivery(subtotal);
+  const checkoutDeliveryMethod: DeliveryMethod = canDeliver ? deliveryMethod : "pickup";
+
+  useEffect(() => {
+    if (canDeliver || deliveryMethod === "pickup") return;
+
+    const timer = window.setTimeout(() => setDeliveryMethod("pickup"), 0);
+    return () => window.clearTimeout(timer);
+  }, [canDeliver, deliveryMethod]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setPickupFullName((currentName) => currentName || user?.fullName || "");
+      setPickupPhone((currentPhone) => currentPhone || user?.primaryPhoneNumber?.phoneNumber || "");
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [user?.fullName, user?.primaryPhoneNumber?.phoneNumber]);
 
   const handleResetCart = () => {
     const confirmed = window.confirm('Are you sure you want to reset your cart?');
@@ -45,19 +71,39 @@ const CartPage = () => {
   }
 
   const handleCheckOut = async() => {
-    if (!selectedAddress) {
+    if (checkoutDeliveryMethod === "delivery" && !selectedAddress) {
       toast.error("Please select or add a delivery address");
       return;
+    }
+
+    if (checkoutDeliveryMethod === "pickup") {
+      if (!pickupFullName.trim()) {
+        toast.error("Please enter your full name for store pickup");
+        return;
+      }
+
+      if (!/^(?:\+91[\s-]?|91[\s-]?)?[6-9]\d{9}$/.test(pickupPhone.trim())) {
+        toast.error("Please enter a valid mobile number for store pickup");
+        return;
+      }
     }
 
     setIsLoading(true);
     try {
       const metaData: MetaData = {
         orderNumber: crypto.randomUUID(),
-        customerName: user?.fullName ?? "Unknown",
+        customerName:
+          checkoutDeliveryMethod === "pickup"
+            ? pickupFullName.trim()
+            : user?.fullName ?? "Unknown",
         customerEmail: user?.emailAddresses[0]?.emailAddress ?? "Unknown",
+        customerPhone:
+          checkoutDeliveryMethod === "pickup"
+            ? pickupPhone.trim()
+            : selectedAddress?.phone || user?.primaryPhoneNumber?.phoneNumber || "",
         clerkUserId: user?.id,
-        address: toShippingAddressSnapshot(selectedAddress),
+        deliveryMethod: checkoutDeliveryMethod,
+        address: checkoutDeliveryMethod === "delivery" ? toShippingAddressSnapshot(selectedAddress) : null,
       };
       const checkOutUrl = await createCheckoutSession(groupedItems, metaData);
       if(checkOutUrl){
@@ -177,6 +223,13 @@ const CartPage = () => {
                   </div>
                   <div>
                     <div className="lg:col-span-1">
+                      <div className="mb-5">
+                        <DeliveryMethodSelector
+                          subtotal={subtotal}
+                          deliveryMethod={deliveryMethod}
+                          onDeliveryMethodChange={setDeliveryMethod}
+                        />
+                      </div>
                       <div className="hidden md:inline-block w-full bg-white p-6 rounded-lg border">
                         <h2 className="text-xl font-semibold mb-4">Order Summarry</h2>
                         <div className="space-y-4">
@@ -204,12 +257,24 @@ const CartPage = () => {
                         </div>
                       </div>
                         <div className="mt-5">
-                          <CheckoutAddressSelector
-                            selectedAddress={selectedAddress}
-                            onSelectAddress={setSelectedAddress}
-                            defaultEmail={user?.primaryEmailAddress?.emailAddress}
-                            defaultFullName={user?.fullName || ""}
-                          />
+                          {checkoutDeliveryMethod === "delivery" ? (
+                            <CheckoutAddressSelector
+                              selectedAddress={selectedAddress}
+                              onSelectAddress={setSelectedAddress}
+                              defaultEmail={user?.primaryEmailAddress?.emailAddress}
+                              defaultFullName={user?.fullName || ""}
+                            />
+                          ) : (
+                            <div className="space-y-5">
+                              <PickupContactForm
+                                fullName={pickupFullName}
+                                phone={pickupPhone}
+                                onFullNameChange={setPickupFullName}
+                                onPhoneChange={setPickupPhone}
+                              />
+                              <PickupInformation />
+                            </div>
+                          )}
                         </div>
                     </div>
                   </div>

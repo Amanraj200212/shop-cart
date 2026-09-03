@@ -1,5 +1,6 @@
 import { MetaData, ShippingAddressSnapshot } from "@/actions/createCheckoutSession";
 import { backendClient } from "@/lib/backendClient";
+import { DeliveryMethod, isAllowedOrderStatus } from "@/lib/delivery";
 import stripe from "@/lib/strips";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
@@ -72,10 +73,17 @@ async function createOrderInSanity(
     orderNumber, 
     customerName, 
     customerEmail,
+    customerPhone,
     clerkUserId, 
+    deliveryMethod,
     address
   } = metadata as unknown as MetaData & {address: string};
   const parsedAddress = address ? (JSON.parse(address) as ShippingAddressSnapshot | null) : null;
+  const orderDeliveryMethod: DeliveryMethod =
+    deliveryMethod === "delivery" ? "delivery" : "pickup";
+  const initialOrderStatus = isAllowedOrderStatus(orderDeliveryMethod, "pending")
+    ? "pending"
+    : "pending";
 
   const lineItemsWithProduct = await stripe.checkout.sessions.listLineItems(
     id,
@@ -109,6 +117,7 @@ async function createOrderInSanity(
     stripeCheckoutSessionId: id,
     stripePaymentIntentId: payment_intent,
     customerName,
+    customerPhone: customerPhone || parsedAddress?.phone || "",
     stripeCustomerId: customerEmail,
     clerkUserId: clerkUserId,
     email: customerEmail,
@@ -120,6 +129,8 @@ async function createOrderInSanity(
     products: sanityProducts,
     totalPrice: amount_total ? amount_total / 100 : 0,
     status: "paid",
+    deliveryMethod: orderDeliveryMethod,
+    orderStatus: initialOrderStatus,
     orderDate: new Date().toISOString(),
     invoice: invoice
       ? {
@@ -128,7 +139,7 @@ async function createOrderInSanity(
           hosted_invoice_url: invoice.hosted_invoice_url,
         }
       : null,
-    address: parsedAddress
+    address: orderDeliveryMethod === "delivery" && parsedAddress
       ? {
           fullName: parsedAddress.fullName,
           email: parsedAddress.email,

@@ -208,6 +208,7 @@ export type Order = {
   clerkUserId?: string;
   customerName?: string;
   email?: string;
+  customerPhone?: string;
   stripePaymentIntentId?: string;
   products?: Array<{
     product?: ProductReference;
@@ -217,6 +218,16 @@ export type Order = {
   totalPrice?: number;
   currency?: string;
   amountDiscount?: number;
+  deliveryMethod?: "delivery" | "pickup";
+  orderStatus?:
+    | "pending"
+    | "confirmed"
+    | "preparing"
+    | "out_for_delivery"
+    | "delivered"
+    | "ready_for_pickup"
+    | "picked_up"
+    | "cancelled";
   address?: {
     fullName?: string;
     email?: string;
@@ -602,7 +613,7 @@ export type BRAND_QUERY_RESULT = Array<{
 
 // Source: sanity/queries/query.ts
 // Variable: MY_ORDERS_QUERY
-// Query: *[_type == 'order' && clerkUserId == $userId] | order(orderData desc){...,products[]{  ...,product->}}
+// Query: *[_type == 'order' && clerkUserId == $userId] | order(orderDate desc){...,products[]{  ...,product->}}
 export type MY_ORDERS_QUERY_RESULT = Array<{
   _id: string;
   _type: "order";
@@ -620,6 +631,7 @@ export type MY_ORDERS_QUERY_RESULT = Array<{
   clerkUserId?: string;
   customerName?: string;
   email?: string;
+  customerPhone?: string;
   stripePaymentIntentId?: string;
   products: Array<{
     product: {
@@ -658,6 +670,16 @@ export type MY_ORDERS_QUERY_RESULT = Array<{
   totalPrice?: number;
   currency?: string;
   amountDiscount?: number;
+  deliveryMethod?: "delivery" | "pickup";
+  orderStatus?:
+    | "cancelled"
+    | "confirmed"
+    | "delivered"
+    | "out_for_delivery"
+    | "pending"
+    | "picked_up"
+    | "preparing"
+    | "ready_for_pickup";
   address?: {
     fullName?: string;
     email?: string;
@@ -852,7 +874,7 @@ declare module "@sanity/client" {
     "*[_type == 'product' && status == 'hot'] | order(name asc){\n    ...,\"categories\": categories[]->title\n  }": DEAL_PRODUCTS_RESULT;
     '*[_type == "product" && slug.current == $slug] | order(name asc) [0]': PRODUCT_BY_SLUG_QUERY_RESULT;
     '*[_type == "product" && slug.current == $slug]{\n  "brandName": brand->title\n  }': BRAND_QUERY_RESULT;
-    "*[_type == 'order' && clerkUserId == $userId] | order(orderData desc){\n...,products[]{\n  ...,product->\n}\n}": MY_ORDERS_QUERY_RESULT;
+    "*[_type == 'order' && clerkUserId == $userId] | order(orderDate desc){\n...,products[]{\n  ...,product->\n}\n}": MY_ORDERS_QUERY_RESULT;
     "*[_type == 'blog'] | order(publishedAt desc)[0...$quantity]{\n  ...,  \n     blogcategories[]->{\n    title\n}\n    }\n  ": GET_ALL_BLOG_RESULT;
     '*[_type == "blog" && slug.current == $slug][0]{\n  ..., \n    author->{\n    name,\n    image,\n  },\n  blogcategories[]->{\n    title,\n    "slug": slug.current,\n  },\n}': SINGLE_BLOG_QUERY_RESULT;
     '*[_type == "blog"]{\n     blogcategories[]->{\n    ...\n    }\n  }': BLOG_CATEGORIES_RESULT;

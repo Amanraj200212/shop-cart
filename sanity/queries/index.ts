@@ -1,6 +1,7 @@
 import { sanityFetch } from "../lib/live";
-import type { Category } from "@/sanity.types";
+import type { Category, MY_ORDERS_QUERY_RESULT } from "@/sanity.types";
 import {
+  ALL_ORDERS_QUERY,
   BLOG_CATEGORIES,
   BRAND_QUERY,
   BRANDS_QUERY,
@@ -103,6 +104,19 @@ const getMyOrders = async (userId: string) => {
     return null;
   }
 };
+
+const getAllOrders = async (): Promise<MY_ORDERS_QUERY_RESULT> => {
+  try {
+    const orders = await sanityFetch({
+      query: ALL_ORDERS_QUERY,
+    });
+    return (orders?.data || []) as MY_ORDERS_QUERY_RESULT;
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    return [];
+  }
+};
+
 const getAllBlogs = async (quantity: number) => {
   try {
     const { data } = await sanityFetch({
@@ -160,6 +174,7 @@ export {
   getProductBySlug,
   getBrand,
   getMyOrders,
+  getAllOrders,
   getAllBlogs,
   getSingleBlog,
   getBlogCategories,

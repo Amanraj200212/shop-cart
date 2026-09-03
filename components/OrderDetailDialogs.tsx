@@ -7,6 +7,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import Image from 'next/image';
 import { urlFor } from '@/sanity/lib/image';
 import PriceFormatter from './PriceFormatter';
+import { Badge } from './ui/badge';
+import PickupInformation from './PickupInformation';
+import OrderStatusTimeline from './OrderStatusTimeline';
+import { DeliveryMethod, getDeliveryMethodLabel, ORDER_STATUS_LABELS, OrderStatus } from '@/lib/delivery';
+import { Bike, Store } from 'lucide-react';
+import { statusBadgeClassName } from './admin/AdminOrdersDashboard';
 
 interface OrderDetailsDailogsProps {
   order: MY_ORDERS_QUERY_RESULT[number] | null;
@@ -20,6 +26,10 @@ const OrderDetailDialogs: React.FC<OrderDetailsDailogsProps> = ({
   onClose
 }) => {
   if(!order) return null;
+  const deliveryMethod = (order.deliveryMethod || "pickup") as DeliveryMethod;
+
+  const orderStatus = (order.orderStatus || "pending") as OrderStatus;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className='max-h-[90vh] overflow-y-scroll sm:max-w-4xl'>
@@ -46,6 +56,26 @@ const OrderDetailDialogs: React.FC<OrderDetailsDailogsProps> = ({
                 {order.status}    
               </span>
           </p>
+          <div className='mt-2 flex flex-wrap items-center gap-2'>
+            <strong>Delivery Method:</strong>
+            <Badge
+              variant='outline'
+              className='gap-1 border-shop_light_green/40 text-shop_dark_green'
+            >
+              {deliveryMethod === "delivery" ? (
+                <Bike className='size-3' />
+              ) : (
+                <Store className='size-3' />
+              )}
+              {getDeliveryMethodLabel(deliveryMethod)}
+            </Badge>
+          </div>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <strong>Order Status:</strong>
+            <Badge variant="outline" className={statusBadgeClassName(orderStatus)}>
+              {ORDER_STATUS_LABELS[orderStatus] || orderStatus}
+            </Badge>
+          </div>
           <p>
             <strong>Invoice Number:</strong> {" "} 
             {order?.invoice?.number}
@@ -66,6 +96,25 @@ const OrderDetailDialogs: React.FC<OrderDetailsDailogsProps> = ({
             </Button>
           )}
         </div>
+        <OrderStatusTimeline
+          deliveryMethod={deliveryMethod}
+          orderStatus={order.orderStatus}
+        />
+        {deliveryMethod === "delivery" && order.address ? (
+          <div className='rounded-lg border bg-gray-50 p-4 text-sm'>
+            <h3 className='mb-2 font-semibold text-shop_dark_green'>Shipping Address</h3>
+            <p className='font-medium'>{order.address.fullName}</p>
+            <p>{order.address.phone}</p>
+            <p>{order.address.email}</p>
+            <p>
+              {[order.address.address, order.address.addressLine2, order.address.city, order.address.state, order.address.pinCode]
+                .filter(Boolean)
+                .join(", ")}
+            </p>
+          </div>
+        ) : (
+          <PickupInformation />
+        )}
         <Table className='w-full'>
           <TableHeader>
             <TableRow className='bg-black/10'>
