@@ -22,7 +22,7 @@ const NoAccess = ({
           <p className='text-center font-medium text-darkColor/50'>
             {details}
           </p>
-        <SignInButton mode='modal'>
+        <SignInButton mode='redirect'>
           <Button variant='custom' className='w-full' size='lg'>Sign in</Button>
         </SignInButton>
         </CardContent>
@@ -30,7 +30,7 @@ const NoAccess = ({
           <div className='text-sm text-muted-foreground text-center'>
             Don&rsquo;t have an account
           </div>
-          <SignUpButton mode='modal'>
+          <SignUpButton mode='redirect'>
             <Button variant='outline' className='w-full' size='lg'>Create an account</Button>
           </SignUpButton>
         </CardContent>

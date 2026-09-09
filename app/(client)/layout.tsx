@@ -16,7 +16,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider proxyUrl={process.env.NEXT_PUBLIC_CLERK_PROXY_URL}>
+    <ClerkProvider
+      proxyUrl={process.env.NEXT_PUBLIC_CLERK_PROXY_URL}
+      signInUrl="/sign-in"
+      signUpUrl="/sign-up"
+    >
       <div className="flex min-h-screen flex-col">
         <div className="sticky top-0 z-50">
           <Header />

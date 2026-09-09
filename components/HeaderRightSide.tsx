@@ -14,7 +14,7 @@ const HeaderRightSide = async () => {
 
   if (!user) {
     return (
-      <SignInButton mode='modal'>
+      <SignInButton mode='redirect'>
         <button
           type='button'
           className='inline-flex items-center justify-center rounded-full bg-shop_dark_green/90 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-shop_dark_green focus:outline-none focus:ring-2 focus:ring-shop_dark_green/40'
