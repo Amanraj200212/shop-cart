@@ -3,7 +3,7 @@ import { Button } from "./ui/button"
 
 const SignUp = () => {
   return (
-    <SignUpButton mode="redirect">
+    <SignUpButton mode="modal">
       <Button 
         variant="default"
         className="text-sm font-semibold hover:text-darkColor hoverEffect"

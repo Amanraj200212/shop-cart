@@ -3,7 +3,7 @@ import { SignInButton } from "@clerk/nextjs"
 
 const SignIn = () => {
   return (
-    <SignInButton mode="redirect">
+    <SignInButton mode="modal">
       <Button 
         variant="ghost"
         className="text-sm font-semibold hover:text-darkColor hoverEffect"
