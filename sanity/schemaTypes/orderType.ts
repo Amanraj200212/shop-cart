@@ -60,7 +60,26 @@ export const orderType = defineType({
       name: "stripePaymentIntentId",
       title: "Stripe Payment Intent ID",
       type: "string",
+    }),
+    defineField({
+      name: "paymentMethod",
+      title: "Payment Method",
+      type: "string",
+      initialValue: "stripe",
+      options: {
+        list: [
+          { title: "Stripe Card", value: "stripe" },
+          { title: "Manual UPI QR", value: "upi_manual" },
+        ],
+        layout: "radio",
+      },
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "upiTransactionId",
+      title: "UPI Transaction ID",
+      type: "string",
+      hidden: ({ document }) => document?.paymentMethod !== "upi_manual",
     }),
     defineField({
       name: "products",
@@ -157,6 +176,7 @@ export const orderType = defineType({
       options: {
         list: [
           { title: "Pending", value: "pending" },
+          { title: "Pending Verification", value: "pending_verification" },
           { title: "Processing", value: "processing" },
           { title: "Paid", value: "paid" },
           { title: "Shipped", value: "shipped" },

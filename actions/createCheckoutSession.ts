@@ -1,7 +1,7 @@
 'use server'
 
 import stripe from "@/lib/strips";
-import { DeliveryMethod } from "@/lib/delivery";
+import type { DeliveryMethod } from "@/lib/delivery";
 import { urlFor } from "@/sanity/lib/image";
 import { CartItem } from "@/store";
 import type Stripe from "stripe";
@@ -71,7 +71,7 @@ const createCheckoutSession = async(items: GroupedCartItem[], metadata: MetaData
 
         return {
           price_data: {
-            currency: 'usd',
+            currency: 'inr',
             unit_amount: Math.round(price * 100),
             product_data: {
               name: item.product.name || 'Unknown Product',

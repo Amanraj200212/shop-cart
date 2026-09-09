@@ -10,9 +10,14 @@ import PriceFormatter from './PriceFormatter';
 import { Badge } from './ui/badge';
 import PickupInformation from './PickupInformation';
 import OrderStatusTimeline from './OrderStatusTimeline';
-import { DeliveryMethod, getDeliveryMethodLabel, ORDER_STATUS_LABELS, OrderStatus } from '@/lib/delivery';
+import {
+  DeliveryMethod,
+  getDeliveryMethodLabel,
+  ORDER_STATUS_LABELS,
+  OrderStatus,
+  statusBadgeClassName,
+} from '@/lib/delivery';
 import { Bike, Store } from 'lucide-react';
-import { statusBadgeClassName } from './admin/AdminOrdersDashboard';
 
 interface OrderDetailsDailogsProps {
   order: MY_ORDERS_QUERY_RESULT[number] | null;
@@ -51,11 +56,21 @@ const OrderDetailDialogs: React.FC<OrderDetailsDailogsProps> = ({
           <p>
             <strong>Status:</strong> {" "}
               <span
-                className={`font-semibold capitalize text-green-600`}
+                className={`font-semibold capitalize ${order.status === "paid" ? "text-green-600" : "text-amber-700"}`}
               >
-                {order.status}    
+                {order.status?.replaceAll("_", " ") || "pending"}    
               </span>
           </p>
+          <p className='capitalize'>
+            <strong>Payment Method:</strong> {" "}
+            {order.paymentMethod === "upi_manual" ? "Manual UPI QR" : "Stripe Card"}
+          </p>
+          {order.upiTransactionId && (
+            <p>
+              <strong>UPI Transaction ID:</strong> {" "}
+              <span className='font-medium'>{order.upiTransactionId}</span>
+            </p>
+          )}
           <div className='mt-2 flex flex-wrap items-center gap-2'>
             <strong>Delivery Method:</strong>
             <Badge
@@ -78,7 +93,7 @@ const OrderDetailDialogs: React.FC<OrderDetailsDailogsProps> = ({
           </div>
           <p>
             <strong>Invoice Number:</strong> {" "} 
-            {order?.invoice?.number}
+            {order?.invoice?.number || (order.paymentMethod === "upi_manual" ? "Manual receipt" : "N/A")}
           </p>
           {order?.invoice?.number && (
             <Button 

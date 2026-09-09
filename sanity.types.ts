@@ -210,6 +210,8 @@ export type Order = {
   email?: string;
   customerPhone?: string;
   stripePaymentIntentId?: string;
+  paymentMethod?: "stripe" | "upi_manual";
+  upiTransactionId?: string;
   products?: Array<{
     product?: ProductReference;
     quantity?: number;
@@ -244,6 +246,7 @@ export type Order = {
   };
   status?:
     | "pending"
+    | "pending_verification"
     | "processing"
     | "paid"
     | "shipped"
@@ -633,6 +636,8 @@ export type MY_ORDERS_QUERY_RESULT = Array<{
   email?: string;
   customerPhone?: string;
   stripePaymentIntentId?: string;
+  paymentMethod?: "stripe" | "upi_manual";
+  upiTransactionId?: string;
   products: Array<{
     product: {
       _id: string;
@@ -700,6 +705,7 @@ export type MY_ORDERS_QUERY_RESULT = Array<{
     | "out_for_delivery"
     | "paid"
     | "pending"
+    | "pending_verification"
     | "processing"
     | "shipped";
   orderDate?: string;

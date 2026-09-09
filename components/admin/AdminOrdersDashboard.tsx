@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Bike, CalendarDays, ChevronDown, Package, Phone, Store, User } from "lucide-react";
 import toast from "react-hot-toast";
 
-import { updateOrderStatus } from "@/actions/updateOrderStatus";
+import { markManualUpiOrderPaid, updateOrderStatus } from "@/actions/updateOrderStatus";
 import { MY_ORDERS_QUERY_RESULT } from "@/sanity.types";
 import PriceFormatter from "@/components/PriceFormatter";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +26,7 @@ import {
   OrderStatus,
   getAllowedOrderStatuses,
   getDeliveryMethodLabel,
+  statusBadgeClassName,
 } from "@/lib/delivery";
 import { cn } from "@/lib/utils";
 
@@ -68,17 +69,6 @@ const getOrdersForTab = (orders: AdminOrder[], tab: AdminTab) => {
   }
 };
 
-export const statusBadgeClassName = (status: OrderStatus) =>
-  cn(
-    "capitalize",
-    status === "cancelled" && "border-red-200 bg-red-50 text-red-700",
-    ["delivered", "picked_up"].includes(status) && "border-green-200 bg-green-50 text-green-700",
-    ["ready_for_pickup", "out_for_delivery"].includes(status) &&
-      "border-blue-200 bg-blue-50 text-blue-700",
-    ["pending", "confirmed", "preparing"].includes(status) &&
-      "border-amber-200 bg-amber-50 text-amber-800"
-  );
-
 const AdminOrdersDashboard = ({ orders }: { orders: MY_ORDERS_QUERY_RESULT }) => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<AdminTab>("new");
@@ -120,6 +110,29 @@ const AdminOrdersDashboard = ({ orders }: { orders: MY_ORDERS_QUERY_RESULT }) =>
         toast.success("Order status updated");
       } catch (error) {
         toast.error(error instanceof Error ? error.message : "Unable to update order");
+      } finally {
+        setUpdatingOrderId(null);
+      }
+    });
+  };
+
+  const handleMarkPaid = (order: AdminOrder) => {
+    setUpdatingOrderId(order._id);
+
+    startTransition(async () => {
+      try {
+        await markManualUpiOrderPaid(order._id);
+        setLocalOrders((currentOrders) =>
+          currentOrders.map((item) =>
+            item._id === order._id
+              ? { ...item, status: "paid", orderStatus: "confirmed" }
+              : item
+          )
+        );
+        router.refresh();
+        toast.success("UPI payment marked as paid");
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Unable to verify payment");
       } finally {
         setUpdatingOrderId(null);
       }
@@ -223,16 +236,26 @@ const AdminOrdersDashboard = ({ orders }: { orders: MY_ORDERS_QUERY_RESULT }) =>
                                 <PriceFormatter amount={order.totalPrice} className="text-black" />
                               </TableCell>
                               <TableCell>
-                                <Badge
-                                  variant="outline"
-                                  className={cn(
-                                    order.status === "paid"
-                                      ? "border-green-200 bg-green-50 text-green-700"
-                                      : "border-amber-200 bg-amber-50 text-amber-800"
+                                <div className="space-y-2">
+                                  <Badge
+                                    variant="outline"
+                                    className={cn(
+                                      order.status === "paid"
+                                        ? "border-green-200 bg-green-50 text-green-700"
+                                        : "border-amber-200 bg-amber-50 text-amber-800"
+                                    )}
+                                  >
+                                    {order.status?.replaceAll("_", " ") || "pending"}
+                                  </Badge>
+                                  <p className="text-xs text-gray-500">
+                                    {order.paymentMethod === "upi_manual" ? "Manual UPI" : "Stripe"}
+                                  </p>
+                                  {order.upiTransactionId && (
+                                    <p className="text-xs font-medium text-gray-700">
+                                      UPI: {order.upiTransactionId}
+                                    </p>
                                   )}
-                                >
-                                  {order.status || "pending"}
-                                </Badge>
+                                </div>
                               </TableCell>
                               <TableCell>
                                 <Badge
@@ -281,30 +304,44 @@ const AdminOrdersDashboard = ({ orders }: { orders: MY_ORDERS_QUERY_RESULT }) =>
                                 </p>
                               </TableCell>
                               <TableCell className="text-right">
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      size="sm"
-                                      disabled={isPending && updatingOrderId === order._id}
-                                    >
-                                      Status
-                                      <ChevronDown className="size-3.5" />
-                                    </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end" className="w-44">
-                                    {allowedStatuses.map((status) => (
-                                      <DropdownMenuItem
-                                        key={status}
-                                        disabled={status === orderStatus}
-                                        onSelect={() => handleStatusChange(order, status)}
+                                <div className="flex flex-col items-end gap-2">
+                                  {order.paymentMethod === "upi_manual" &&
+                                    order.status !== "paid" && (
+                                      <Button
+                                        type="button"
+                                        variant="custom"
+                                        size="sm"
+                                        disabled={isPending && updatingOrderId === order._id}
+                                        onClick={() => handleMarkPaid(order)}
                                       >
-                                        {ORDER_STATUS_LABELS[status]}
-                                      </DropdownMenuItem>
-                                    ))}
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
+                                        Mark Paid
+                                      </Button>
+                                    )}
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={isPending && updatingOrderId === order._id}
+                                      >
+                                        Status
+                                        <ChevronDown className="size-3.5" />
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="w-44">
+                                      {allowedStatuses.map((status) => (
+                                        <DropdownMenuItem
+                                          key={status}
+                                          disabled={status === orderStatus}
+                                          onSelect={() => handleStatusChange(order, status)}
+                                        >
+                                          {ORDER_STATUS_LABELS[status]}
+                                        </DropdownMenuItem>
+                                      ))}
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                </div>
                               </TableCell>
                             </TableRow>
                           );

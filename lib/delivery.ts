@@ -1,5 +1,7 @@
 import { Bike, CheckCircle2, Clock, PackageCheck, PackageOpen, Store } from "lucide-react";
 
+import { cn } from "@/lib/utils";
+
 export const DELIVERY_MINIMUM = 500;
 
 export const STORE_PICKUP_DETAILS = {
@@ -78,3 +80,14 @@ export const ORDER_STATUS_ICONS = {
   picked_up: PackageCheck,
   cancelled: Clock,
 };
+
+export const statusBadgeClassName = (status: OrderStatus) =>
+  cn(
+    "capitalize",
+    status === "cancelled" && "border-red-200 bg-red-50 text-red-700",
+    ["delivered", "picked_up"].includes(status) && "border-green-200 bg-green-50 text-green-700",
+    ["ready_for_pickup", "out_for_delivery"].includes(status) &&
+      "border-blue-200 bg-blue-50 text-blue-700",
+    ["pending", "confirmed", "preparing"].includes(status) &&
+      "border-amber-200 bg-amber-50 text-amber-800"
+  );

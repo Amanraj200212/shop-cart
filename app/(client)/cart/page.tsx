@@ -1,12 +1,15 @@
 'use client'
 
+import createManualUpiOrder from "@/actions/createManualUpiOrder";
 import createCheckoutSession, { MetaData } from "@/actions/createCheckoutSession";
 import AddToWishListButton from "@/components/AddToWishListButton";
 import CheckoutAddressSelector from "@/components/address/CheckoutAddressSelector";
 import Container from "@/components/Container";
 import DeliveryMethodSelector from "@/components/DeliveryMethodSelector";
 import EmptyCart from "@/components/EmptyCart";
+import ManualUpiPayment from "@/components/ManualUpiPayment";
 import NoAccess from "@/components/NoAccess";
+import PaymentMethodSelector from "@/components/PaymentMethodSelector";
 import PickupContactForm from "@/components/PickupContactForm";
 import PickupInformation from "@/components/PickupInformation";
 import PriceFormatter from "@/components/PriceFormatter";
@@ -16,16 +19,19 @@ import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { AddressDocument, toShippingAddressSnapshot } from "@/lib/address";
 import { DeliveryMethod, qualifiesForDelivery } from "@/lib/delivery";
+import { PaymentMethod } from "@/lib/payment";
 import { urlFor } from "@/sanity/lib/image";
 import useStore from "@/store";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { Trash } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState }from "react";
 import toast from "react-hot-toast";
 
 const CartPage = () => {
+  const router = useRouter();
   const {
     deleteCartProduct, 
     getTotalPrice, 
@@ -40,8 +46,10 @@ const CartPage = () => {
   const {user} = useUser();
   const [selectedAddress, setSelectedAddress] = useState<AddressDocument | null>(null);
   const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("pickup");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("stripe");
   const [pickupFullName, setPickupFullName] = useState(user?.fullName || "");
   const [pickupPhone, setPickupPhone] = useState(user?.primaryPhoneNumber?.phoneNumber || "");
+  const [upiTransactionId, setUpiTransactionId] = useState("");
   const subtotal = getTotalPrice();
   const canDeliver = qualifiesForDelivery(subtotal);
   const checkoutDeliveryMethod: DeliveryMethod = canDeliver ? deliveryMethod : "pickup";
@@ -88,6 +96,11 @@ const CartPage = () => {
       }
     }
 
+    if (paymentMethod === "upi_manual" && upiTransactionId.trim().length < 6) {
+      toast.error("Please enter your UPI transaction ID after payment");
+      return;
+    }
+
     setIsLoading(true);
     try {
       const metaData: MetaData = {
@@ -105,6 +118,19 @@ const CartPage = () => {
         deliveryMethod: checkoutDeliveryMethod,
         address: checkoutDeliveryMethod === "delivery" ? toShippingAddressSnapshot(selectedAddress) : null,
       };
+
+      if (paymentMethod === "upi_manual") {
+        await createManualUpiOrder({
+          items: groupedItems,
+          metadata: metaData,
+          upiTransactionId,
+        });
+        resetCart();
+        toast.success("Order placed. Payment is pending verification.");
+        router.push(`/success?orderNumber=${metaData.orderNumber}&payment=upi`);
+        return;
+      }
+
       const checkOutUrl = await createCheckoutSession(groupedItems, metaData);
       if(checkOutUrl){
         window.location.href = checkOutUrl;
@@ -230,6 +256,12 @@ const CartPage = () => {
                           onDeliveryMethodChange={setDeliveryMethod}
                         />
                       </div>
+                      <div className="mb-5">
+                        <PaymentMethodSelector
+                          paymentMethod={paymentMethod}
+                          onPaymentMethodChange={setPaymentMethod}
+                        />
+                      </div>
                       <div className="hidden md:inline-block w-full bg-white p-6 rounded-lg border">
                         <h2 className="text-xl font-semibold mb-4">Order Summarry</h2>
                         <div className="space-y-4">
@@ -252,7 +284,11 @@ const CartPage = () => {
                             onClick={handleCheckOut}
                             disabled={isLoading}
                           >
-                            {isLoading ? 'Your order is processing...' : 'Proceed to checkout'}
+                            {isLoading
+                              ? 'Your order is processing...'
+                              : paymentMethod === "upi_manual"
+                                ? "Place UPI Order"
+                                : 'Proceed to checkout'}
                           </Button>
                         </div>
                       </div>
@@ -273,6 +309,15 @@ const CartPage = () => {
                                 onPhoneChange={setPickupPhone}
                               />
                               <PickupInformation />
+                            </div>
+                          )}
+                          {paymentMethod === "upi_manual" && (
+                            <div className="mt-5">
+                              <ManualUpiPayment
+                                amount={getTotalPrice()}
+                                transactionId={upiTransactionId}
+                                onTransactionIdChange={setUpiTransactionId}
+                              />
                             </div>
                           )}
                         </div>
@@ -302,7 +347,11 @@ const CartPage = () => {
                             onClick={handleCheckOut}
                             disabled={isLoading}
                           >
-                            {isLoading ? '' : 'Proceed to checkout'}
+                            {isLoading
+                              ? ''
+                              : paymentMethod === "upi_manual"
+                                ? "Place UPI Order"
+                                : 'Proceed to checkout'}
                           </Button>
                         </div>
                       </div>

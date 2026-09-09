@@ -12,6 +12,8 @@ const SuccessContent = () => {
   const searchParams = useSearchParams();
   const session_id = searchParams.get("session_id");
   const orderNumber = searchParams.get("orderNumber");
+  const payment = searchParams.get("payment");
+  const isManualUpi = payment === "upi";
   
   useEffect(() => {
     if(session_id) {
@@ -42,12 +44,19 @@ const SuccessContent = () => {
         </h1>
         <div className="space-y-4 mb-4 text-left">
           <p className="text-gray-700">
-            Thank you for your purchase. we&apos;re processing your order and will ship it soon. A confirmation email with your order details will be sent to your indox shortly.
+            {isManualUpi
+              ? "Thank you for your order. Your UPI payment is pending verification and we will confirm it after checking the transaction."
+              : "Thank you for your purchase. We're processing your order and will update you soon."}
           </p>
           <p className="text-gray-700">
             Order Number:{" "} 
             <span className="font-semibold">{orderNumber}</span>
           </p>
+          {isManualUpi && (
+            <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+              Keep your UPI transaction ID saved until the order is marked paid.
+            </p>
+          )}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Link
