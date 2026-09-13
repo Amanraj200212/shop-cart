@@ -110,7 +110,6 @@ const ProductCard = ({product}: {product : ProductCardProduct}) => {
         ) : (
           <PriceView 
             price={product?.price} 
-            discount={product?.discount} 
             className="text-sm"
           />
         )}

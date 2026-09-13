@@ -70,7 +70,6 @@ const CartPage = () => {
     deleteCartProduct, 
     getTotalPrice, 
     getItemCount, 
-    getSubTotalPrice, 
     resetCart,
   } = useStore();
 
@@ -324,11 +323,7 @@ const CartPage = () => {
                         <div className="space-y-4">
                           <div className="flex items-center justify-between">
                             <span>SubTotal</span>
-                            <PriceFormatter amount={getSubTotalPrice()} />
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span>Discount</span>
-                            <PriceFormatter amount={getSubTotalPrice() - getTotalPrice()} />
+                            <PriceFormatter amount={getTotalPrice()} />
                           </div>
                           <Separator />
                           <div className="flex items-center justify-between font-semibold text-shop_dark_green  ">
@@ -387,11 +382,7 @@ const CartPage = () => {
                         <div className="space-y-4">
                           <div className="flex items-center justify-between">
                             <span>SubTotal</span>
-                            <PriceFormatter amount={getSubTotalPrice()} />
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span>Discount</span>
-                            <PriceFormatter amount={getSubTotalPrice() - getTotalPrice()} />
+                            <PriceFormatter amount={getTotalPrice()} />
                           </div>
                           <Separator />
                           <div className="flex items-center justify-between font-semibold text-shop_dark_green  ">

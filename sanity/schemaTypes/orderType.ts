@@ -161,6 +161,8 @@ export const orderType = defineType({
       name: "amountDiscount",
       title: "Amount Discount",
       type: "number",
+      readOnly: true,
+      hidden: true,
       validation: (Rule) => Rule.required(),
     }),
     defineField({

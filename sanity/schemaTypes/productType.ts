@@ -102,17 +102,12 @@ export const productType = defineType({
       name: "discount",
       title: "Discount",
       type: "number",
-      hidden: ({ parent }) => parent?.sellingType === "loose",
-      validation: (Rule) =>
-        Rule.custom((discount, context) => {
-          const parent = context.parent as { sellingType?: string } | undefined;
-
-          if (parent?.sellingType === "loose") return true;
-          if (typeof discount !== "number") return "Discount is required for fixed products.";
-          if (discount < 0) return "Discount must be 0 or higher.";
-
-          return true;
-        }),
+      readOnly: true,
+      hidden: true,
+      deprecated: {
+        reason: "Discounts are no longer used by the storefront.",
+      },
+      initialValue: undefined,
     }),
     defineField({
       name: "categories",
@@ -150,10 +145,10 @@ export const productType = defineType({
       type: "string",
       options: {
         list: [
-          {title: "Gadget", value: "gadget"},
-          {title: "newb", value: "newb"},
-          {title: "Appliances", value: "appliances"},
-          {title: "Refrigerators", value: "refrigerators"},
+          {title: "Daily Use", value: "dailyuse"},
+          {title: "Soap & Surf", value: "soapsurf"},
+          {title: "Chocolates", value: "chocolates"},
+          {title: "Cold Drinks", value: "colddrinks"},
           {title: "Others", value: "others"},
         ],
       },

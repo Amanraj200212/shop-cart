@@ -55,7 +55,6 @@ const page = async({params}: {params: Promise<{slug: string}>}) => {
             ) : (
               <PriceView 
                 price={product?.price} 
-                discount={product?.discount} 
                 className='text-lg font-bold'
               />
             )}

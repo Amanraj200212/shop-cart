@@ -59,7 +59,6 @@ const createCheckoutSession = async(items: GroupedCartItem[], metadata: MetaData
       customer: customerId,
       customer_email: customerId ? undefined : metadata.customerEmail,
       mode: 'payment',
-      allow_promotion_codes: true,
       payment_method_types: ['card'],
       invoice_creation: {
         enabled: true,

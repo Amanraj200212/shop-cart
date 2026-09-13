@@ -65,8 +65,7 @@ async function createOrderInSanity(
     amount_total, 
     currency, 
     metadata, 
-    payment_intent, 
-    total_details
+    payment_intent
   } = session;
 
   const {
@@ -135,9 +134,7 @@ async function createOrderInSanity(
     clerkUserId: clerkUserId,
     email: customerEmail,
     currency,
-    amountDiscount: total_details?.amount_discount
-      ? total_details.amount_discount / 100
-      : 0,
+    amountDiscount: 0,
 
     products: sanityProducts,
     totalPrice: amount_total ? amount_total / 100 : 0,

@@ -54,7 +54,7 @@ const page = async ({ searchParams }: SearchPageProps) => {
         )}
 
         {searchTerm && products.length > 0 ? (
-          <div className='mt-6 grid grid-cols-2 gap-2.5 md:grid-cols-3 lg:grid-cols-5'>
+          <div className='mt-6 grid grid-cols-1 gap-2.5 md:grid-cols-3 lg:grid-cols-5'>
             {products.map((product) => (
               <ProductCard key={product._id} product={product} />
             ))}

@@ -181,24 +181,6 @@ const OrderDetailDialogs: React.FC<OrderDetailsDailogsProps> = ({
         </Table>
         <div className='mt-4 bg-black/5 rounded-md p-2.5 text-right flex items-center justify-end'>
             <div className='w-full flex flex-col gap-1'>
-              {order?.amountDiscount !== 0 && (
-                <div className='w-full flex items-center justify-between'>
-                  <strong>Discount: </strong>
-                  <PriceFormatter 
-                    amount={order?.amountDiscount}
-                    className='font-bold text-black'
-                  />
-                </div>
-              )}
-              {order?.amountDiscount !== 0 && (
-                <div className='w-full flex items-center justify-between'>
-                  <strong>Subtotal: </strong>
-                  <PriceFormatter 
-                    amount={(order?.amountDiscount as number) + (order?.amountDiscount as  number)}
-                    className='font-bold text-black'
-                  />
-                </div>
-              )}
               <div className='w-full flex items-center justify-between'>
                 <strong>Total:</strong>
                 <PriceFormatter

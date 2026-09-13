@@ -13,7 +13,7 @@ import { Product } from "@/sanity.types";
 const ProductGrid = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading ] = useState(false);
-  const [selectedTab, setSelectedTab] = useState(productType[0]?.title || "");
+  const [selectedTab, setSelectedTab] = useState(productType[0]?.value || "");
 
   
   useEffect(() => {
@@ -45,7 +45,7 @@ const ProductGrid = () => {
         </div>
       </div>
        : products?.length ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:md:grid-cols-5 gap-2.5 mt-10 ">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:md:grid-cols-5 gap-2.5 mt-10 ">
           {products?.map((product) => (
             <AnimatePresence key={product?._id}>
               <motion.div 

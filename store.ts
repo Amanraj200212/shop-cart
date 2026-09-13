@@ -28,7 +28,6 @@ interface StoreState {
   ) => void;
   resetCart: () => void;
   getTotalPrice: () => number;
-  getSubTotalPrice: () => number;
   getItemCount: (productId: string, selectedWeightGrams?: number) => number;
   getGroupedItems: () => CartItem[];
   favoriteProduct: Product[];
@@ -159,18 +158,6 @@ const useStore = create<StoreState>()(
             total + (item.linePrice ?? item.product.price ?? 0) * item.quantity,
           0
         );
-      },
-      getSubTotalPrice: () => {
-        return get().items.reduce((total, item) => {
-          if (item.selectedWeightGrams) {
-            return total + (item.linePrice ?? 0) * item.quantity;
-          }
-
-          const price = item.product.price ?? 0;
-          const discount = ((item.product.discount ?? 0) * price) / 100;
-          const discountedPrice = price + discount;
-          return total + discountedPrice * item.quantity;
-        }, 0);
       },
       getItemCount: (productId, selectedWeightGrams) => {
         const item = get().items.find(
