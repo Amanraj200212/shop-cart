@@ -28,9 +28,13 @@ import {
   getDeliveryMethodLabel,
   statusBadgeClassName,
 } from "@/lib/delivery";
+import { formatWeight } from "@/lib/loose-products";
 import { cn } from "@/lib/utils";
 
 type AdminOrder = MY_ORDERS_QUERY_RESULT[number];
+type AdminOrderProduct = NonNullable<NonNullable<AdminOrder["products"]>[number]> & {
+  selectedWeightGrams?: number;
+};
 
 const adminTabs = [
   { value: "new", label: "New Orders" },
@@ -223,13 +227,21 @@ const AdminOrdersDashboard = ({ orders }: { orders: MY_ORDERS_QUERY_RESULT }) =>
                               </TableCell>
                               <TableCell className="min-w-56">
                                 <div className="space-y-1">
-                                  {order.products?.map((item) => (
-                                    <p key={item._key} className="flex items-center gap-1.5 text-sm">
-                                      <Package className="size-3.5 text-gray-500" />
-                                      <span>{item.product?.name || "Deleted product"}</span>
-                                      <span className="font-semibold">x{item.quantity || 0}</span>
-                                    </p>
-                                  ))}
+                                  {order.products?.map((orderItem) => {
+                                    const item = orderItem as AdminOrderProduct;
+
+                                    return (
+                                      <p key={item._key} className="flex items-center gap-1.5 text-sm">
+                                        <Package className="size-3.5 text-gray-500" />
+                                        <span>{item.product?.name || "Deleted product"}</span>
+                                        <span className="font-semibold">
+                                          {item.selectedWeightGrams
+                                            ? formatWeight(item.selectedWeightGrams)
+                                            : `x${item.quantity || 0}`}
+                                        </span>
+                                      </p>
+                                    );
+                                  })}
                                 </div>
                               </TableCell>
                               <TableCell className="min-w-28">

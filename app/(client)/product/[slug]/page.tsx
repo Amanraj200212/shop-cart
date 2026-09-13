@@ -12,11 +12,15 @@ import {FaRegQuestionCircle} from "react-icons/fa"
 import {FiShare2} from "react-icons/fi"
 import {TbTruckDelivery} from "react-icons/tb"
 import ProductMoreDetails from '@/components/ProductMoreDetails';
+import PriceFormatter from '@/components/PriceFormatter';
+import { isLooseProduct, ProductWithSellingType } from '@/lib/loose-products';
 
 const page = async({params}: {params: Promise<{slug: string}>}) => {
   const {slug} = await params;
   const product = await getProductBySlug(slug);
   if (!product) notFound();
+  const productForSale = product as ProductWithSellingType;
+  const isLoose = isLooseProduct(productForSale);
 
   return (
     <div className='mx-auto px-4'>
@@ -43,11 +47,18 @@ const page = async({params}: {params: Promise<{slug: string}>}) => {
             </div>
           </div>
           <div className='space-y-2 border-b border-t border-gray-200 py-5 '>
-            <PriceView 
-              price={product?.price} 
-              discount={product?.discount} 
-              className='text-lg font-bold'
-            />
+            {isLoose ? (
+              <div className='flex items-center gap-1 text-lg font-bold'>
+                <PriceFormatter amount={productForSale?.pricePerKg} className='text-shop_dark_green' />
+                <span className='text-sm font-semibold text-shop_light_text'>/kg</span>
+              </div>
+            ) : (
+              <PriceView 
+                price={product?.price} 
+                discount={product?.discount} 
+                className='text-lg font-bold'
+              />
+            )}
             <p 
               className={`px-4 py-1.5 inline-block font-semibold rounded-lg ${product?.stock === 0 ? "bg-red-100 text-red-600" : " bg-green-100 text-green-600"}`}
             >
@@ -55,7 +66,7 @@ const page = async({params}: {params: Promise<{slug: string}>}) => {
             </p>
           </div>
           <div className='flex items-center gap-2.5 lg:gap-3'>
-            <AddToCartButton product={product}/>
+            <AddToCartButton product={productForSale}/>
             <FavoriteBtn showProduct={true} product={product} />
           </div>
           <ProductCharacteristics product={product} />

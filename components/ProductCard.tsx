@@ -6,12 +6,16 @@ import AddToWishListButton from './AddToWishListButton'
 import PriceView from './PriceView'
 import AddToCartButton from './AddToCartButton'
 import { Product } from '@/sanity.types'
+import { isLooseProduct, ProductWithSellingType } from '@/lib/loose-products'
+import PriceFormatter from './PriceFormatter'
 
-type ProductCardProduct = Omit<Product, "categories"> & {
+type ProductCardProduct = Omit<ProductWithSellingType, "categories"> & {
   categories?: Product["categories"] | Array<string | null> | null;
 };
 
 const ProductCard = ({product}: {product : ProductCardProduct}) => {
+  const productForCart = product as ProductWithSellingType;
+  const isLoose = isLooseProduct(productForCart);
   const categoryNames = product?.categories
     ?.map((category) => (typeof category === "string" ? category : category?._ref))
     .filter(Boolean)
@@ -98,13 +102,20 @@ const ProductCard = ({product}: {product : ProductCardProduct}) => {
           </p>
         </div>
 
-        <PriceView 
-          price={product?.price} 
-          discount={product?.discount} 
-          className="text-sm"
-        />
+        {isLoose ? (
+          <div className='flex items-center gap-1 text-sm'>
+            <PriceFormatter amount={product?.pricePerKg} className='text-shop_dark_green' />
+            <span className='text-xs font-semibold text-shop_light_text'>/kg</span>
+          </div>
+        ) : (
+          <PriceView 
+            price={product?.price} 
+            discount={product?.discount} 
+            className="text-sm"
+          />
+        )}
 
-        <AddToCartButton product={product as Product} className='w-36 rounded-full'/>
+        <AddToCartButton product={productForCart} className='w-36 rounded-full'/>
       </div>
     </div>
   );

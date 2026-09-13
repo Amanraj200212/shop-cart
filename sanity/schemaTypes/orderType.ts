@@ -100,6 +100,24 @@ export const orderType = defineType({
               title: "Quantity Purchased",
               type: "number",
             }),
+            defineField({
+              name: "selectedWeightGrams",
+              title: "Selected Weight (grams)",
+              type: "number",
+              hidden: ({ parent }) => !parent?.selectedWeightGrams,
+            }),
+            defineField({
+              name: "pricePerKg",
+              title: "Price Per Kg",
+              type: "number",
+              hidden: ({ parent }) => !parent?.selectedWeightGrams,
+            }),
+            defineField({
+              name: "linePrice",
+              title: "Line Price",
+              type: "number",
+              hidden: ({ parent }) => !parent?.selectedWeightGrams,
+            }),
           ],
 
           //for preview into sanity
@@ -107,14 +125,19 @@ export const orderType = defineType({
             select: {
               product: "product.name",
               quantity: "quantity",
+              selectedWeightGrams: "selectedWeightGrams",
+              linePrice: "linePrice",
               image: "product.image",
               price: "product.price",
               currency: "product.currency",
             },
             prepare(select) {
+              const quantityLabel = select.selectedWeightGrams
+                ? `${select.selectedWeightGrams}g`
+                : `x ${select.quantity}`;
               return {
-                title: `${select.product} x ${select.quantity}`,
-                subtitle: `${select.price * select.quantity}`,
+                title: `${select.product} ${quantityLabel}`,
+                subtitle: `${select.linePrice ?? select.price * select.quantity}`,
                 media: select.image,
               };
             },

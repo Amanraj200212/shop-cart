@@ -18,6 +18,7 @@ import {
   statusBadgeClassName,
 } from '@/lib/delivery';
 import { Bike, Store } from 'lucide-react';
+import { formatWeight } from '@/lib/loose-products';
 
 interface OrderDetailsDailogsProps {
   order: MY_ORDERS_QUERY_RESULT[number] | null;
@@ -34,6 +35,11 @@ const OrderDetailDialogs: React.FC<OrderDetailsDailogsProps> = ({
   const deliveryMethod = (order.deliveryMethod || "pickup") as DeliveryMethod;
 
   const orderStatus = (order.orderStatus || "pending") as OrderStatus;
+  type OrderProduct = NonNullable<NonNullable<typeof order.products>[number]> & {
+    selectedWeightGrams?: number;
+    linePrice?: number;
+    pricePerKg?: number;
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -139,12 +145,16 @@ const OrderDetailDialogs: React.FC<OrderDetailsDailogsProps> = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {order?.products?.map((order, index) => (
+            {order?.products?.map((orderItem, index) => {
+              const item = orderItem as OrderProduct;
+              const isLoose = !!item.selectedWeightGrams;
+
+              return (
               <TableRow key={index}>
                 <TableCell className='flex items-center gap-2'>
-                  {order?.product?.images && (
+                  {item?.product?.images && (
                     <Image 
-                      src={urlFor(order?.product?.images[0]).url()}
+                      src={urlFor(item?.product?.images[0]).url()}
                       alt='productImage'
                       width={50}
                       height={50}
@@ -152,18 +162,21 @@ const OrderDetailDialogs: React.FC<OrderDetailsDailogsProps> = ({
                     />
                   )}
 
-                  {order.product?.name}
+                  {item.product?.name}
                 </TableCell>
                 <TableCell>
-                  {order.quantity}
+                  {isLoose
+                    ? formatWeight(item.selectedWeightGrams as number)
+                    : item.quantity}
                 </TableCell>
                 <TableCell>
                   <PriceFormatter
                     className='text-black font-medium' 
-                    amount={order.product?.price}/>
+                    amount={isLoose ? item.linePrice : item.product?.price}/>
                 </TableCell>
               </TableRow>
-            ))}
+              );
+            })}
           </TableBody>
         </Table>
         <div className='mt-4 bg-black/5 rounded-md p-2.5 text-right flex items-center justify-end'>

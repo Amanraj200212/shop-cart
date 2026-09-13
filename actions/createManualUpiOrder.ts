@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 
 import type { GroupedCartItem, MetaData } from "@/actions/createCheckoutSession";
 import { backendClient } from "@/lib/backendClient";
+import { isLooseProduct } from "@/lib/loose-products";
 
 const updateStockLevels = async (
   stockUpdates: { productId: string; quantity: number }[]
@@ -62,19 +63,31 @@ const createManualUpiOrder = async ({
   for (const item of items) {
     const productId = item.product._id;
     const quantity = item.quantity || 0;
-    const price = item.product.price || 0;
+    const isLoose = isLooseProduct(item.product);
+    const price = isLoose ? item.linePrice || 0 : item.product.price || 0;
 
     if (!productId || quantity <= 0) continue;
 
-    sanityProducts.push({
+    const sanityProduct = {
       _key: crypto.randomUUID(),
       product: {
         _type: "reference",
         _ref: productId,
       },
       quantity,
+      selectedWeightGrams: item.selectedWeightGrams,
+      pricePerKg: item.pricePerKg,
+      linePrice: isLoose ? price : undefined,
+    };
+
+    sanityProducts.push(sanityProduct);
+    stockUpdate.push({
+      productId,
+      quantity:
+        isLoose && item.selectedWeightGrams
+          ? (item.selectedWeightGrams / 1000) * quantity
+          : quantity,
     });
-    stockUpdate.push({ productId, quantity });
     totalPrice += price * quantity;
   }
 

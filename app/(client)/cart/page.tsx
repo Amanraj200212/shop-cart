@@ -13,6 +13,7 @@ import PaymentMethodSelector from "@/components/PaymentMethodSelector";
 import PickupContactForm from "@/components/PickupContactForm";
 import PickupInformation from "@/components/PickupInformation";
 import PriceFormatter from "@/components/PriceFormatter";
+import LooseQuantitySelector from "@/components/LooseQuantitySelector";
 import QuantityButton from "@/components/QuantityButton";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -21,7 +22,7 @@ import { AddressDocument, toShippingAddressSnapshot } from "@/lib/address";
 import { DeliveryMethod, qualifiesForDelivery } from "@/lib/delivery";
 import { PaymentMethod } from "@/lib/payment";
 import { urlFor } from "@/sanity/lib/image";
-import useStore from "@/store";
+import useStore, { CartItem } from "@/store";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { Trash } from "lucide-react";
 import Image from "next/image";
@@ -29,6 +30,39 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState }from "react";
 import toast from "react-hot-toast";
+import {
+  formatWeight,
+  getCartLineId,
+  isLooseProduct,
+  ProductWithSellingType,
+  WeightUnit,
+} from "@/lib/loose-products";
+
+const LooseCartWeightSelector = ({ item }: { item: CartItem }) => {
+  const updateLooseItemWeight = useStore((state) => state.updateLooseItemWeight);
+  const product = item.product as ProductWithSellingType;
+  const selectedWeightGrams = item.selectedWeightGrams || 0;
+  const [unit, setUnit] = useState<WeightUnit>(
+    selectedWeightGrams >= 1000 && selectedWeightGrams % 1000 === 0
+      ? "kilogram"
+      : "gram"
+  );
+
+  if (!selectedWeightGrams) return null;
+
+  return (
+    <LooseQuantitySelector
+      product={product}
+      unit={unit}
+      weightGrams={selectedWeightGrams}
+      onUnitChange={setUnit}
+      onWeightChange={(nextWeightGrams) =>
+        updateLooseItemWeight(product._id, selectedWeightGrams, nextWeightGrams)
+      }
+      compact
+    />
+  );
+};
 
 const CartPage = () => {
   const router = useRouter();
@@ -155,11 +189,13 @@ const CartPage = () => {
                 <div className="grid lg:grid-cols-3 md:gap-8">
                   <div className="lg:col-span-2 rounded-lg">
                     <div className="border bg-white rounded-md">
-                      {groupedItems?.map(({product}) => {
-                        const itemCount = getItemCount(product?._id);
+                      {groupedItems?.map((item) => {
+                        const { product, selectedWeightGrams, linePrice } = item;
+                        const isLoose = isLooseProduct(product);
+                        const itemCount = getItemCount(product?._id, selectedWeightGrams);
                         return (
                           <div 
-                            key={product?._id}
+                            key={getCartLineId(product?._id, selectedWeightGrams)}
                             className="flex items-center justify-between gap-5 border-b p-2.5 last:border-b-0"
                           >
                             <div className="flex flex-1 items-start gap-2 h-36 md:h-44">
@@ -184,11 +220,21 @@ const CartPage = () => {
                                     {product?.name}
                                   </h2>
                                   <p className="text-sm text-shop_dark_green capitalize">
-                                    Variant:{" "}
+                                    {isLoose ? "Weight:" : "Variant:"}{" "}
                                     <span className="font-semibold text-shop_light_green">
-                                      {product?.variant}
+                                      {isLoose && selectedWeightGrams
+                                        ? formatWeight(selectedWeightGrams)
+                                        : product?.variant}
                                     </span>
                                   </p>
+                                  {isLoose && (
+                                    <p className="text-sm text-shop_dark_green">
+                                      Price:{" "}
+                                      <span className="font-semibold text-shop_light_green">
+                                        <PriceFormatter amount={product.pricePerKg} />/kg
+                                      </span>
+                                    </p>
+                                  )}
                                   <p className="text-sm text-shop_dark_green capitalize">
                                     Status:{" "}
                                     <span className="font-semibold text-shop_light_green">
@@ -213,7 +259,7 @@ const CartPage = () => {
                                       <TooltipTrigger asChild>
                                         <Trash 
                                           onClick={() =>{ 
-                                            deleteCartProduct(product?._id);
+                                            deleteCartProduct(product?._id, selectedWeightGrams);
                                             toast.success('Product deleted from cart!');
                                             }
                                           }
@@ -230,10 +276,21 @@ const CartPage = () => {
                             </div>
                             <div className="flex flex-col items-start justify-between h-36 md:h-44 p-0.5 md:p-1">
                               <PriceFormatter 
-                                amount={(product?.price as number)* itemCount}
+                                amount={(linePrice ?? product?.price ?? 0) * itemCount}
                                 className="text-lg font-bold"
                               />
-                              <QuantityButton product={product} />
+                              {isLoose ? (
+                                <div className="space-y-1 text-right">
+                                  {itemCount > 1 && (
+                                    <p className="text-xs font-medium text-gray-500">
+                                      Cart quantity: {itemCount}
+                                    </p>
+                                  )}
+                                  <LooseCartWeightSelector item={item} />
+                                </div>
+                              ) : (
+                                <QuantityButton product={product} />
+                              )}
                             </div>
                           </div>
                         );

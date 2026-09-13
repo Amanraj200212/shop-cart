@@ -35,16 +35,84 @@ export const productType = defineType({
       type: "string",
     }),
     defineField({
+      name: "sellingType",
+      title: "Selling Type",
+      type: "string",
+      initialValue: "fixed",
+      options: {
+        list: [
+          { title: "Fixed", value: "fixed" },
+          { title: "Loose", value: "loose" },
+        ],
+        layout: "radio",
+      },
+    }),
+    defineField({
       name: "price",
       title: "Price",
       type: "number",
-      validation: (Rule) => Rule.required().min(0),
+      hidden: ({ parent }) => parent?.sellingType === "loose",
+      validation: (Rule) =>
+        Rule.custom((price, context) => {
+          const parent = context.parent as { sellingType?: string } | undefined;
+
+          if (parent?.sellingType === "loose") return true;
+          if (typeof price !== "number") return "Price is required for fixed products.";
+          if (price < 0) return "Price must be 0 or higher.";
+
+          return true;
+        }),
+    }),
+    defineField({
+      name: "pricePerKg",
+      title: "Price Per Kg",
+      type: "number",
+      hidden: ({ parent }) => parent?.sellingType !== "loose",
+      validation: (Rule) =>
+        Rule.custom((pricePerKg, context) => {
+          const parent = context.parent as { sellingType?: string } | undefined;
+
+          if (parent?.sellingType === "loose" && typeof pricePerKg !== "number") {
+            return "Price per kg is required for loose products.";
+          }
+
+          return true;
+        }).min(0),
+    }),
+    defineField({
+      name: "weightIncrement",
+      title: "Weight Increment (grams)",
+      type: "number",
+      hidden: ({ parent }) => parent?.sellingType !== "loose",
+      validation: (Rule) =>
+        Rule.custom((weightIncrement, context) => {
+          const parent = context.parent as { sellingType?: string } | undefined;
+
+          if (
+            parent?.sellingType === "loose" &&
+            (typeof weightIncrement !== "number" || weightIncrement <= 0)
+          ) {
+            return "Weight increment is required for loose products.";
+          }
+
+          return true;
+        }).integer(),
     }),
     defineField({
       name: "discount",
       title: "Discount",
       type: "number",
-      validation: (Rule) => Rule.required().min(0),
+      hidden: ({ parent }) => parent?.sellingType === "loose",
+      validation: (Rule) =>
+        Rule.custom((discount, context) => {
+          const parent = context.parent as { sellingType?: string } | undefined;
+
+          if (parent?.sellingType === "loose") return true;
+          if (typeof discount !== "number") return "Discount is required for fixed products.";
+          if (discount < 0) return "Discount must be 0 or higher.";
+
+          return true;
+        }),
     }),
     defineField({
       name: "categories",
@@ -83,6 +151,7 @@ export const productType = defineType({
       options: {
         list: [
           {title: "Gadget", value: "gadget"},
+          {title: "newb", value: "newb"},
           {title: "Appliances", value: "appliances"},
           {title: "Refrigerators", value: "refrigerators"},
           {title: "Others", value: "others"},

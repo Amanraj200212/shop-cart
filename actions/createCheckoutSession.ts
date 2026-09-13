@@ -2,6 +2,7 @@
 
 import stripe from "@/lib/strips";
 import type { DeliveryMethod } from "@/lib/delivery";
+import { formatWeight, isLooseProduct } from "@/lib/loose-products";
 import { urlFor } from "@/sanity/lib/image";
 import { CartItem } from "@/store";
 import type Stripe from "stripe";
@@ -33,6 +34,9 @@ export interface MetaData {
 export interface GroupedCartItem {
   product: CartItem["product"];
   quantity: number;
+  selectedWeightGrams?: number;
+  linePrice?: number;
+  pricePerKg?: number;
 }
 
 const createCheckoutSession = async(items: GroupedCartItem[], metadata: MetaData) => {
@@ -63,20 +67,33 @@ const createCheckoutSession = async(items: GroupedCartItem[], metadata: MetaData
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success?session_id={CHECKOUT_SESSION_ID}&orderNumber=${metadata.orderNumber}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cart`,
       line_items: items.map((item) => {
-        const price = item.product.price;
+        const isLoose = isLooseProduct(item.product);
+        const price = isLoose ? item.linePrice : item.product.price;
 
         if (typeof price !== "number") {
           throw new Error(`Missing price for product ${item.product._id}`);
         }
+
+        const selectedWeight = item.selectedWeightGrams
+          ? formatWeight(item.selectedWeightGrams)
+          : undefined;
 
         return {
           price_data: {
             currency: 'inr',
             unit_amount: Math.round(price * 100),
             product_data: {
-              name: item.product.name || 'Unknown Product',
+              name: selectedWeight
+                ? `${item.product.name || "Unknown Product"} - ${selectedWeight}`
+                : item.product.name || 'Unknown Product',
               description: item.product.description,
-              metadata: {id: item.product._id},
+              metadata: {
+                id: item.product._id,
+                sellingType: item.product.sellingType || "fixed",
+                selectedWeightGrams: item.selectedWeightGrams?.toString() || "",
+                pricePerKg: item.pricePerKg?.toString() || "",
+                linePrice: item.linePrice?.toString() || "",
+              },
               images: 
                 item.product.images && item.product.images.length > 0 ? [urlFor(item.product.images[0]).url()] : undefined
             },

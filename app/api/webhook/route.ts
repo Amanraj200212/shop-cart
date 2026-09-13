@@ -94,8 +94,13 @@ async function createOrderInSanity(
   const sanityProducts = [];
   const stockUpdate = []
   for(const item of lineItemsWithProduct.data) {
-    const productId = (item.price?.product as Stripe.Product)?.metadata?.id;
+    const stripeProduct = item.price?.product as Stripe.Product;
+    const productMetadata = stripeProduct?.metadata;
+    const productId = productMetadata?.id;
     const quantity = item?.quantity || 0;
+    const selectedWeightGrams = Number(productMetadata?.selectedWeightGrams) || undefined;
+    const pricePerKg = Number(productMetadata?.pricePerKg) || undefined;
+    const linePrice = Number(productMetadata?.linePrice) || undefined;
 
     if(!productId) continue;
 
@@ -106,8 +111,16 @@ async function createOrderInSanity(
         _ref: productId,
       },
       quantity,
+      selectedWeightGrams,
+      pricePerKg,
+      linePrice,
     });
-    stockUpdate.push({productId, quantity})
+    stockUpdate.push({
+      productId,
+      quantity: selectedWeightGrams
+        ? (selectedWeightGrams / 1000) * quantity
+        : quantity,
+    })
   };
 
   //create order in sanity
