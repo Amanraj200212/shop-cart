@@ -1,7 +1,7 @@
 import Container from '@/components/Container';
 import ImageView from '@/components/ImageView';
 import { getProductBySlug } from '@/sanity/queries';
-import { CornerDownLeft, StarIcon, Truck } from 'lucide-react';
+import { CornerDownLeft, Truck } from 'lucide-react';
 import PriceView from '@/components/PriceView';
 import AddToCartButton from '@/components/AddToCartButton';
 import FavoriteBtn from '@/components/FavoriteBtn';
@@ -34,17 +34,6 @@ const page = async({params}: {params: Promise<{slug: string}>}) => {
             <p className='text-sm text-gray-600 tracking-wide'>
               {product?.description}
             </p>
-            <div className='flex items-center gap-0.5 text-xs'>
-              {[...Array(5)].map((_, index) => (
-                <StarIcon
-                  key={index}
-                  size={12}
-                  className='text-shop_light_green'
-                  fill='#3b9c3c' 
-                />
-              ))}
-              <p className='font-semibold'>{`(120})`}</p>
-            </div>
           </div>
           <div className='space-y-2 border-b border-t border-gray-200 py-5 '>
             {isLoose ? (
@@ -94,8 +83,11 @@ const page = async({params}: {params: Promise<{slug: string}>}) => {
                 <p className='text-base font-semibold text-black'>
                   Free Delivery
                 </p>
-                <p className='text-sm font-semibold text-gray-500 underline underline-offset-2'>
-                  Enter your Postal code for Delivery Availability
+                <p className='text-sm font-semibold text-gray-500 '>
+                  If order is above {" "}
+                  <span className='underline underline-offset-2'>
+                    <PriceFormatter amount={1000} className='text-shop_light_green' />
+                  </span>.
                 </p>
               </div>
             </div>
@@ -106,8 +98,8 @@ const page = async({params}: {params: Promise<{slug: string}>}) => {
                   Return Delivery
                 </p>
                 <p className='text-sm font-semibold text-gray-500 '>
-                  free 7 days Delivery Return.{" "}
-                  <span className='underline underline-offset-2'>Details</span>
+                  Only some items are eligible for {" "} {" "}
+                  <span className='underline text-red-500 underline-offset-2'>Return</span>.
                 </p>
               </div>
             </div>

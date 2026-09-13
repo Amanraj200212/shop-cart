@@ -1,5 +1,5 @@
 import { urlFor } from '@/sanity/lib/image'
-import { Flame, StarIcon } from 'lucide-react'
+import { Flame } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import AddToWishListButton from './AddToWishListButton'
@@ -76,22 +76,6 @@ const ProductCard = ({product}: {product : ProductCardProduct}) => {
         <h2 className='text-sm font-semibold line-clamp-1'>
           {product?.name}
         </h2>
-
-        <div className='flex items-center gap-4'>
-          <div className='flex items-center '>
-            {[...Array(5)].map((_, index) => (
-              <StarIcon 
-                size={13}
-                key={index} 
-                className={index < 4 ? "text-shop_lighter_green" : "text-shop_lighter_text"}
-                fill={index < 4 ? "#93D991" : "#ababab"}
-              />
-            ))}
-          </div>
-          <p className='text-shop_light_text text-xs tracking-wide'>
-            5 reviews
-          </p>
-        </div>
 
         <div className='flex items-center gap-2.5'>
           <p className='font-medium'>In Stock</p>
