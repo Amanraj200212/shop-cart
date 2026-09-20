@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local Sanity import and cleanup tools
+/scripts/import-products.ts
+/scripts/clear-shop-content.ts
+/data/products.csv
