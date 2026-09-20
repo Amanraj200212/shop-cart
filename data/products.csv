@@ -1,0 +1,5 @@
+name,brand,category,price,stock,sellingType,pricePerKg,weightIncrement,status,variant,isFeatured,description,imageUrl
+Sample Loose Flour,Sudha Milk,Flour,,50,loose,80,100,new,dailyuse,false,Sample loose product,
+Sample Fixed Product,Sony Limited,Appliances,130,20,fixed,,,new,dailyuse,false,Sample fixed product,
+Fortune Oil,Sony Limited,Appliances,130,20,fixed,,,new,dailyuse,false,Sunflower oil,
+Loose Flour,Sudha Milk,Flour,100,50,loose,100,250,new,dailyuse,false,Whole wheat flour,
