@@ -3,7 +3,7 @@
 import useStore from "@/store"
 import { useState } from "react";
 import Container from "./Container";
-import { Heart, X } from "lucide-react";
+import { Heart, Trash } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -68,12 +68,12 @@ const handleReset = () => {
                 {favoriteProduct?.slice(0, visibleProduct)?.map((product) => (
                   <tr key={product?._id} className="border-b">
                     <td className="px-2 py-4 flex items-center gap-2">
-                       <X 
+                       <Trash
                           onClick={() => {
                             removeFromFavorite(product?._id)
                             toast.success('Product removed from wishlist')
                           }}
-                          className="hover:text-red-600 hover:cursor-pointer hoverEffect"
+                          className="text-red-600 rounded-xs bg-lightColor/10 hover:cursor-pointer hoverEffect"
                         />
                       {product?.images && (
                         <Link 
