@@ -16,16 +16,6 @@ export const quickLinks = [
   {title: "Help & Support", href: "/help"},
 ]
 
-export const categoriesData = [
-  {title: "Mobiles", href: "mobiles"},
-  {title: "Appliances", href: "appliances"},
-  {title: "SmartPhones", href: "smartphones"},
-  {title: "Air Conditioners", href: "air-conditioners"},
-  {title: "Washing Machines", href: "washing-machines"},
-  {title: "Kitchen Appliances", href: "kitchen-appliances"},
-  {title: "Gadget accessories", href: "gadgets-accessories"},
-]
-
 export const productType = [
   {title: "Daily Use", value: "dailyuse"},
   {title: "Soap & Surf", value: "soapsurf"},

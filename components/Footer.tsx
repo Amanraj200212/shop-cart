@@ -3,12 +3,14 @@ import FooterTop from "./FooterTop";
 import Logo from "./Logo";
 import Socialmedia from "./Socialmedia";
 import { SubText, SubTitle } from "./Title";
-import { categoriesData, quickLinks } from "@/constants/data";
+import { quickLinks } from "@/constants/data";
+import { getCategories } from "@/sanity/queries";
 import Link from "next/link";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 
-const Footer = () => {
+const Footer = async () => {
+  const categories = await getCategories();
 
   return (
     <footer className="bg-white border-t">
@@ -56,14 +58,14 @@ const Footer = () => {
               Categories
             </SubTitle>
             <ul className="mt-4 space-y-3">
-              {categoriesData?.map((item) => (
-                <li key = {item?.title}>
+              {categories?.map((category) => (
+                <li key={category?._id}>
                   <Link
-                    href={`/categories/${item?.href}`}
+                    href={`/category/${category?.slug?.current}`}
                     className="hover:text-shop_light_green hoverEffect font-medium"
                   >
                     <SubText>
-                      {item?.title}
+                      {category?.title}
                     </SubText>
                   </Link>
                 </li>
