@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "typegen": "npx sanity@latest schema extract && npx sanity@latest typegen generate",
-    "import-products": "tsx scripts/import-products.ts"
+    "import-products": "tsx scripts/import-products.ts",
+    "clear-shop-content": "tsx scripts/clear-shop-content.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.5.10",

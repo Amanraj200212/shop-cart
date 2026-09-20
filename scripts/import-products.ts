@@ -1,3 +1,9 @@
+// Preview first:
+// npm run import-products -- --dry-run
+
+// If the preview is correct, import:
+// npm run import-products
+
 import "dotenv/config";
 
 import { readFile } from "node:fs/promises";
