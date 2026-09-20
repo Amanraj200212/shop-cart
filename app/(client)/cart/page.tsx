@@ -196,9 +196,9 @@ const CartPage = () => {
                           isLoose ? (
                             <div
                               key={getCartLineId(product?._id, selectedWeightGrams)}
-                              className="flex items-center justify-between gap-5 border-b p-2.5 last:border-b-0"
+                              className="flex flex-col gap-3 border-b p-2.5 last:border-b-0 sm:flex-row sm:items-center sm:justify-between sm:gap-5"
                             >
-                              <div className="flex h-36 flex-1 items-start gap-2 md:h-44">
+                              <div className="flex min-w-0 w-full flex-1 items-start gap-2 sm:h-36 md:h-44">
                                 {product?.images && (
                                   <Link
                                     href={`/product/${product?.slug?.current}`}
@@ -210,7 +210,7 @@ const CartPage = () => {
                                       width={500}
                                       height={500}
                                       loading='lazy'
-                                      className="h-32 w-32 object-cover group-hover:scale-105 hoverEffect md:h-40 md:w-40"
+                                      className="h-24 w-24 object-cover group-hover:scale-105 hoverEffect sm:h-32 sm:w-32 md:h-40 md:w-40"
                                     />
                                   </Link>
                                 )}
@@ -269,7 +269,7 @@ const CartPage = () => {
                                   </div>
                                 </div>
                               </div>
-                              <div className="flex h-36 flex-col items-start justify-between p-0.5 md:h-44 md:p-1">
+                              <div className="flex w-full shrink-0 items-center justify-between gap-3 p-0.5 sm:h-36 sm:w-auto sm:flex-col sm:items-start sm:justify-between md:h-44 md:p-1">
                                 <PriceFormatter
                                   amount={(linePrice ?? product?.price ?? 0) * itemCount}
                                   className="text-lg font-bold"
@@ -280,9 +280,9 @@ const CartPage = () => {
                           ) : (
                             <div
                               key={getCartLineId(product?._id, selectedWeightGrams)}
-                              className="flex items-center justify-between gap-5 border-b p-2.5 last:border-b-0"
+                              className="flex flex-col gap-3 border-b p-2.5 last:border-b-0 sm:flex-row sm:items-center sm:justify-between sm:gap-5"
                             >
-                            <div className="flex flex-1 items-start gap-2 h-36 md:h-44">
+                            <div className="flex min-w-0 w-full flex-1 items-start gap-2 sm:h-36 md:h-44">
                               {product?.images && ( 
                                 <Link 
                                   href={`/product/${product?.slug?.current}`}
@@ -294,7 +294,7 @@ const CartPage = () => {
                                     width={500}
                                     height={500}
                                     loading='lazy'
-                                    className="w-32 md:w-40 h-32 md:h-40 object-cover group-hover:scale-105 hoverEffect"
+                                    className="h-24 w-24 object-cover group-hover:scale-105 hoverEffect sm:h-32 sm:w-32 md:h-40 md:w-40"
                                   />
                                 </Link>
                               )}
@@ -358,7 +358,7 @@ const CartPage = () => {
                                 </div>
                               </div>
                             </div>
-                            <div className="flex flex-col items-start justify-between h-36 md:h-44 p-0.5 md:p-1">
+                            <div className="flex w-full shrink-0 items-center justify-between gap-3 p-0.5 sm:h-36 sm:w-auto sm:flex-col sm:items-start sm:justify-between md:h-44 md:p-1">
                               <PriceFormatter 
                                 amount={(linePrice ?? product?.price ?? 0) * itemCount}
                                 className="text-lg font-bold"
@@ -451,10 +451,10 @@ const CartPage = () => {
                     </div>
                   </div>
                       {/* FOR MOBILE VIEW OF ORDER SUMMARY */}
-                    <div className="fixed bottom-0 left-0 z-20 w-full bg-white pt-2 md:hidden">
-                      <div className="bg-white p-4 rounded-lg border mx-4">
-                        <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-                        <div className="space-y-4">
+                    <div className="fixed inset-x-0 bottom-16 z-40 bg-white md:hidden">
+                      <div className="mx-4 rounded-lg border bg-white px-3 py-2">
+                        <h2 className="mb-1 text-base font-semibold">Order Summary</h2>
+                        <div className="space-y-1 text-sm">
                           <div className="flex items-center justify-between">
                             <span>SubTotal</span>
                             <PriceFormatter amount={getTotalPrice()} />
@@ -465,7 +465,7 @@ const CartPage = () => {
                             <PriceFormatter className="font-bold text-lg" amount={getTotalPrice()} />
                           </div>
                           <Button
-                            className="w-full rounded-full font-semibold tracking-wide hoverEffect"
+                            className="h-8 w-full rounded-full text-xs font-semibold tracking-wide hoverEffect"
                             variant='custom'
                             onClick={handleCheckOut}
                             disabled={isLoading}

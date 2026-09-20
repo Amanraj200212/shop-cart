@@ -5,28 +5,16 @@ import Link from 'next/link'
 
 const searchData = [
   {
-    searchTitle: '43″ Class TU7000 Series Crystal UHD 4K Smart TV',
+    searchTitle: 'Dairy Milk',
   },
   {
-    searchTitle: 'iphone',
+    searchTitle: 'Aata',
   },
   {
-    searchTitle: 'iPhone 16 Pro Max 128GB',
+    searchTitle: 'Pepsi 500ml',
   },
   {
-    searchTitle: 'Portable Mini Washing Machine, White',
-  },
-  {
-    searchTitle: 'High Performance Cooling Fan, 4-Pin, 1500 RPM',
-  },
-  {
-    searchTitle: 'HP Laptop, AMD Ryzen 5 5500U Processor',
-  },
-  {
-    searchTitle: 'refrigerator',
-  },
-  {
-    searchTitle: 'Energy Star Stainless Steel Compact Freezer',
+    searchTitle: 'Kaju 100g',
   },
 ]
 
@@ -37,7 +25,7 @@ const SearchHistory = () => {
         <div className="py-5 px-3 bg-shop_dark_green/10 font-semibold tracking-wide">
           <div className="text-shop_light_text flex items-center gap-1">
             <Search />
-            <span>Search and explore your products from</span>
+            <span>Search your products from</span>
             <Logo />
           </div>
         </div>

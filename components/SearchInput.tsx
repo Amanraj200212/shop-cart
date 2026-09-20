@@ -35,7 +35,7 @@ const SearchInput = ({ defaultValue }: SearchInputProps) => {
       value={value}
       onChange={(event) => setValue(event.target.value)}
       className='border-none'
-      placeholder='Search for Products, Brands and More'
+      placeholder='Search for Products...'
       aria-label='Search for products'
     />
   )

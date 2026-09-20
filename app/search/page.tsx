@@ -43,7 +43,7 @@ const page = async ({ searchParams }: SearchPageProps) => {
       <Container>
         <div className='flex items-center gap-5 bg-gray-50 p-4 mt-10'>
           <BackButton />
-          <SearchInput key={searchTerm} defaultValue={searchTerm} />
+          <SearchInput defaultValue={searchTerm} />
         </div>
         <Separator />
 

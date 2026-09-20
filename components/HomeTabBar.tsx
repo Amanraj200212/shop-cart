@@ -1,5 +1,8 @@
+'use client'
+
 import { productType } from '@/constants/data'
 import Link from 'next/link'
+import { useEffect, useRef, useState } from 'react'
 
 interface props{
   selectedTab: string;
@@ -8,11 +11,75 @@ interface props{
 
 const HomeTabBar = ({selectedTab, onTabSelect}: props) => {
   const carouselItems = [...productType, ...productType]
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isInteractingRef = useRef(false)
+  const [isInteracting, setIsInteracting] = useState(false)
+
+  useEffect(() => {
+    const container = scrollRef.current
+    if (container) container.scrollLeft = Math.max(0, container.scrollWidth / 2 - 1)
+
+    const intervalId = window.setInterval(() => {
+      const currentContainer = scrollRef.current
+      if (currentContainer && !isInteractingRef.current) {
+        const copyWidth = currentContainer.scrollWidth / 2
+        currentContainer.scrollBy({ left: 1, behavior: 'smooth' })
+
+        if (currentContainer.scrollLeft >= copyWidth) {
+          currentContainer.scrollLeft -= copyWidth
+        }
+      }
+
+    }, 30)
+
+    return () => window.clearInterval(intervalId)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
+    }
+  }, [])
+
+  const normalizeLoopPosition = () => {
+    const container = scrollRef.current
+    if (!container || !isInteractingRef.current) return
+
+    const copyWidth = container.scrollWidth / 2
+    if (container.scrollLeft >= copyWidth) {
+      container.scrollLeft -= copyWidth
+    } else if (container.scrollLeft <= 0) {
+      container.scrollLeft += copyWidth
+    }
+  }
+
+  const startInteraction = () => {
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
+    isInteractingRef.current = true
+    setIsInteracting(true)
+  }
+
+  const endInteraction = () => {
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
+    resumeTimerRef.current = setTimeout(() => {
+      isInteractingRef.current = false
+      setIsInteracting(false)
+    }, 600)
+  }
 
   return (
     <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-5'>
-      <div className='group -mx-4 overflow-hidden px-4 sm:mx-0 sm:flex-1 sm:px-0'>
-        <div className='flex w-max animate-[home-tab-marquee_18s_linear_infinite] items-center gap-1.5 text-sm font-semibold group-hover:paused group-active:paused'>
+      <div
+        ref={scrollRef}
+        onPointerDown={startInteraction}
+        onPointerUp={endInteraction}
+        onPointerCancel={endInteraction}
+        onPointerLeave={endInteraction}
+        onScroll={normalizeLoopPosition}
+        className={`scrollbar-hide -mx-4 flex min-w-0 flex-1 touch-pan-x overflow-x-auto px-4 sm:mx-0 sm:px-0 ${isInteracting ? 'cursor-grabbing' : 'cursor-grab'}`}
+      >
+        <div className='flex w-max items-center gap-1.5 text-sm font-semibold'>
         {carouselItems.map((item, index) => (
           <button 
             key={`${item?.value}-${index}`}
@@ -31,6 +98,7 @@ const HomeTabBar = ({selectedTab, onTabSelect}: props) => {
       >
         See all
       </Link>
+      
       <style jsx>{`
         @keyframes home-tab-marquee {
           from { transform: translateX(0); }
