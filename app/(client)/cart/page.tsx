@@ -183,7 +183,7 @@ const CartPage = () => {
             {groupedItems?.length ? (
               <>
                 <div className='border-b mb-10'>
-                  <h2 className='text-2xl font-semibold pb-3'>Shopping Cart Itmes </h2>
+                  <h2 className='text-2xl font-semibold pb-3'>Shopping Cart Items </h2>
                 </div>
                 <div className="grid lg:grid-cols-3 md:gap-8">
                   <div className="lg:col-span-2 rounded-lg">
@@ -193,10 +193,95 @@ const CartPage = () => {
                         const isLoose = isLooseProduct(product);
                         const itemCount = getItemCount(product?._id, selectedWeightGrams);
                         return (
-                          <div 
-                            key={getCartLineId(product?._id, selectedWeightGrams)}
-                            className="flex items-center justify-between gap-5 border-b p-2.5 last:border-b-0"
-                          >
+                          isLoose ? (
+                            <div
+                              key={getCartLineId(product?._id, selectedWeightGrams)}
+                              className="flex items-center justify-between gap-5 border-b p-2.5 last:border-b-0"
+                            >
+                              <div className="flex h-36 flex-1 items-start gap-2 md:h-44">
+                                {product?.images && (
+                                  <Link
+                                    href={`/product/${product?.slug?.current}`}
+                                    className="group mr-2 shrink-0 overflow-hidden rounded-md border p-0.5 md:p-1"
+                                  >
+                                    <Image
+                                      src={urlFor(product?.images[0]).url()}
+                                      alt="product_image"
+                                      width={500}
+                                      height={500}
+                                      loading='lazy'
+                                      className="h-32 w-32 object-cover group-hover:scale-105 hoverEffect md:h-40 md:w-40"
+                                    />
+                                  </Link>
+                                )}
+                                <div className="flex h-full flex-1 flex-col justify-between py-1">
+                                  <div className="flex flex-col gap-0.5 md:gap-1.5">
+                                    <h2 className="line-clamp-1 font-semibold text-shop_dark_green">
+                                      {product?.name}
+                                    </h2>
+                                    <p className="text-sm text-shop_dark_green capitalize">
+                                      Weight:{" "}
+                                      <span className="font-semibold text-shop_light_green">
+                                        {selectedWeightGrams && formatWeight(selectedWeightGrams)}
+                                      </span>
+                                    </p>
+                                    <p className="text-sm text-shop_dark_green">
+                                      Price: {" "}
+                                      <span className="font-semibold text-shop_light_green">
+                                        <PriceFormatter amount={product.pricePerKg} />/kg
+                                      </span>
+                                    </p>
+                                    <p className="text-sm text-shop_dark_green capitalize">
+                                      Status:{" "}
+                                      <span className="font-semibold text-shop_light_green">
+                                        {product?.status}
+                                      </span>
+                                    </p>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <AddToWishListButton
+                                            product={product}
+                                            className="relative top-0 right-0"
+                                          />
+                                        </TooltipTrigger>
+                                        <TooltipContent className="font-bold">
+                                          Add to Favorite
+                                        </TooltipContent>
+                                      </Tooltip>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <Trash
+                                            onClick={() => {
+                                              deleteCartProduct(product?._id, selectedWeightGrams);
+                                              toast.success('Product deleted from cart!');
+                                            }}
+                                            className="mr-1 h-4 w-4 text-gray-500 hover:text-red-600 hoverEffect md:h-5 md:w-5"
+                                          />
+                                        </TooltipTrigger>
+                                        <TooltipContent className="font-bold">
+                                          Delete product
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex h-36 flex-col items-start justify-between p-0.5 md:h-44 md:p-1">
+                                <PriceFormatter
+                                  amount={(linePrice ?? product?.price ?? 0) * itemCount}
+                                  className="text-lg font-bold"
+                                />
+                                <LooseCartWeightSelector item={item} />
+                              </div>
+                            </div>
+                          ) : (
+                            <div
+                              key={getCartLineId(product?._id, selectedWeightGrams)}
+                              className="flex items-center justify-between gap-5 border-b p-2.5 last:border-b-0"
+                            >
                             <div className="flex flex-1 items-start gap-2 h-36 md:h-44">
                               {product?.images && ( 
                                 <Link 
@@ -278,20 +363,10 @@ const CartPage = () => {
                                 amount={(linePrice ?? product?.price ?? 0) * itemCount}
                                 className="text-lg font-bold"
                               />
-                              {isLoose ? (
-                                <div className="space-y-1 text-right">
-                                  {itemCount > 1 && (
-                                    <p className="text-xs font-medium text-gray-500">
-                                      Cart quantity: {itemCount}
-                                    </p>
-                                  )}
-                                  <LooseCartWeightSelector item={item} />
-                                </div>
-                              ) : (
-                                <QuantityButton product={product} />
-                              )}
+                              <QuantityButton product={product} />
                             </div>
-                          </div>
+                            </div>
+                          )
                         );
                       })}
                       <Button 
@@ -376,7 +451,7 @@ const CartPage = () => {
                     </div>
                   </div>
                       {/* FOR MOBILE VIEW OF ORDER SUMMARY */}
-                    <div className="md:hidden fixed bottom-0 left-0 w-full bg-white pt-2">
+                    <div className="fixed bottom-0 left-0 z-20 w-full bg-white pt-2 md:hidden">
                       <div className="bg-white p-4 rounded-lg border mx-4">
                         <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
                         <div className="space-y-4">

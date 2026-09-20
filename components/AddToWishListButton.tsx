@@ -39,7 +39,7 @@ const AddToWishListButton = ({
   };
 
   return (
-    <div className={cn("absolute top-2 right-2 z-10 hover:cursor-pointer", className)} >
+    <div className={cn("z-10 hover:cursor-pointer", className || "absolute top-2 right-2")} >
       <button
         onClick={handleFavorite}
         className={cn(
