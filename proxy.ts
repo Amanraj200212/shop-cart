@@ -4,8 +4,8 @@ import { clerkMiddleware } from '@clerk/nextjs/server'
 
 export default clerkMiddleware({
   frontendApiProxy: {
-    enabled: process.env.NODE_ENV === "production",
-    // enabled: true,
+    // enabled: process.env.NODE_ENV === "production",
+    enabled: true,
   },
 })
 
