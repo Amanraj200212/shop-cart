@@ -10,7 +10,7 @@ const ProductCharacteristics = async({product} : {product: Product | null | unde
   return (
     <Accordion type='single' collapsible>
       <AccordionItem value='item-1'>
-        <AccordionTrigger>
+        <AccordionTrigger className='text-1xl font-semibold tracking-wide'>
           {product?.name}: Characteristics
         </AccordionTrigger>
         <AccordionContent>
@@ -18,14 +18,14 @@ const ProductCharacteristics = async({product} : {product: Product | null | unde
             Brand:{" "}
             {brand && ( 
               <span className='font-semibold tracking-wide'>
-                {brand[0]?.brandName}
+                {brand[0]?.brandName ? brand[0]?.brandName : "N/A"}
               </span>
             )}
           </p>
           <p className='flex items-center justify-between'>
             Collection:{" "}
             <span className='font-semibold tracking-wide'>
-              2025
+              2026
             </span>
           </p>
           <p className='flex items-center justify-between'>
@@ -35,7 +35,7 @@ const ProductCharacteristics = async({product} : {product: Product | null | unde
             </span>
           </p>
           <p className='flex items-center justify-between'>
-            Brand:{" "}
+            Stock:{" "}
             <span className='font-semibold tracking-wide'>
               {product?.stock ? "Available" : "Out of Stock"}
             </span>

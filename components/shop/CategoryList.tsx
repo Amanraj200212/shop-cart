@@ -18,7 +18,12 @@ const CategoryList = ({categories, selectedCategory,setSelectedCategory}: Props)
       <RadioGroup value={selectedCategory || ''} className='mt-2 space-y-1'>
         {categories?.map((category) => (
           <div 
-            onClick={() => setSelectedCategory(category?.slug?.current as string)}
+            onClick={() => {
+              const categorySlug = category?.slug?.current as string;
+              setSelectedCategory((current) =>
+                current === categorySlug ? null : categorySlug
+              );
+            }}
             key={category?._id}
             className='flex items-center space-x-2 hover:cursor-pointer'
           >

@@ -45,13 +45,30 @@ const Shop = ({categories, brands}: Props) => {
         *[_type == 'product' 
           && (!defined($selectedCategory) || references(*[_type == "category" && slug.current == $selectedCategory]._id))
           && (!defined($selectedBrand) || references(*[_type == "brand" && slug.current == $selectedBrand]._id))
-          && price >= $minPrice && price <= $maxPrice
+          && (
+            !$hasPriceFilter ||
+            (
+              sellingType == "loose" &&
+              pricePerKg >= $minPrice && pricePerKg <= $maxPrice
+            ) ||
+            (
+              sellingType != "loose" &&
+              price >= $minPrice && price <= $maxPrice
+            )
+          )
         ] 
         | order(name asc) {
           ...,"categories": categories[]->title
         }
         `;
-        const data = await client.fetch(query, {selectedCategory, selectedBrand, selectedPrice, minPrice, maxPrice});
+        const data = await client.fetch(query, {
+          selectedCategory,
+          selectedBrand,
+          selectedPrice,
+          hasPriceFilter: Boolean(selectedPrice),
+          minPrice,
+          maxPrice,
+        });
         setProducts(data);
       } catch (error) {
         console.log('Shop product fetching Error', error)

@@ -18,6 +18,10 @@ export const quickLinks = [
 
 export const productType = [
   {title: "Daily Use", value: "dailyuse"},
+  {title: "Oil & Refine", value: "oilrefine"},
+  {title: "Masala", value: "masala"},
+  {title: "Milk Products", value: "milkproducts"},
+  {title: "Bakery", value: "bakery"},
   {title: "Soap & Surf", value: "soapsurf"},
   {title: "Chocolates", value: "chocolates"},
   {title: "Cold Drinks", value: "colddrinks"},

@@ -3,11 +3,11 @@ import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { Label } from '../ui/label';
 
 const priceArray = [
-  { title: 'Under $100', value: "0-100" },
-  { title: '$100 - $200', value: "100-200" },
-  { title: '$200 - $300', value: "200-300" },
-  { title: '$300 - $500', value: "300-500" },
-  { title: 'Over $500', value: "500-1000" },
+  { title: 'Under 100', value: "0-100" },
+  { title: '100 - 200', value: "100-200" },
+  { title: '200 - 300', value: "200-300" },
+  { title: '300 - 500', value: "300-500" },
+  { title: 'Over 500', value: "500-1000" },
 ]
 
 interface Props{
@@ -25,7 +25,12 @@ const PriceList = ({selectedPrice, setSelectedPrice} : Props) => {
         {priceArray?.map((price, index) => (
           <div 
             key={index}
-            onClick={() => setSelectedPrice(price?.value)}
+            onClick={() => {
+              const priceSlug = price?.value;
+              setSelectedPrice((value) => 
+                value === priceSlug ? null : priceSlug
+              );
+            }}
             className='flex items-center space-x-2 hover:cursor-pointer'
           >
             <RadioGroupItem

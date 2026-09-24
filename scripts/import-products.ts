@@ -64,7 +64,7 @@ type ProductPayload = {
   weightIncrement?: number;
   categories: Array<{ _key: string; _type: "reference"; _ref: string }>;
   stock: number;
-  brand: { _type: "reference"; _ref: string };
+  brand?: { _type: "reference"; _ref: string };
   status: ProductStatus;
   variant: ProductVariant;
   isFeatured: boolean;
@@ -184,11 +184,14 @@ const validateRow = (
   seenSlugs: Set<string>
 ) => {
   if (!row.name.trim()) throw new Error("name is required");
-  if (!row.brand.trim()) throw new Error("brand is required");
   if (!row.category.trim()) throw new Error("category is required");
 
-  const brand = findByTitle(brandDocuments, row.brand);
-  if (!brand) throw new Error(`Brand "${row.brand.trim()}" not found`);
+  const brand = row.brand.trim()
+    ? findByTitle(brandDocuments, row.brand)
+    : undefined;
+  if (row.brand.trim() && !brand) {
+    throw new Error(`Brand "${row.brand.trim()}" not found`);
+  }
 
   const category = findByTitle(categoryDocuments, row.category);
   if (!category) throw new Error(`Category "${row.category.trim()}" not found`);
@@ -225,11 +228,14 @@ const validateRow = (
     sellingType,
     categories: [{ _key: randomUUID(), _type: "reference", _ref: category._id }],
     stock,
-    brand: { _type: "reference", _ref: brand._id },
     status,
     variant,
     isFeatured,
   };
+
+  if (brand) {
+    product.brand = { _type: "reference", _ref: brand._id };
+  }
 
   if (sellingType === "fixed") {
     product.price = parseNumber(row.price, "price");

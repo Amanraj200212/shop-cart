@@ -61,11 +61,11 @@ const page = async({params}: {params: Promise<{slug: string}>}) => {
           <div className='flex flex-wrap items-center justify-between gap-2.5 border-b border-b-gray-200 py-5 -mt-2'>
             <div className='flex items-center gap-2 text-sm text-black hover:text-red-600 hoverEffect'>
               <RxBorderSplit className="text-lg" />
-              <p>Compare color</p>
+              <p>Fresh quality</p>
             </div>
             <div className='flex items-center gap-2 text-sm text-black hover:text-red-600 hoverEffect'>
               <FaRegQuestionCircle className="text-lg" />
-              <p>Ask aquestion</p>
+              <p>Ask a question</p>
             </div>
             <div className='flex items-center gap-2 text-sm text-black hover:text-red-600 hoverEffect'>
               <TbTruckDelivery className="text-lg" />
