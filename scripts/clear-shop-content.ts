@@ -9,7 +9,7 @@ import "dotenv/config";
 
 import { backendClient } from "../lib/backendClient";
 
-const typesToDelete = ["product", "brand", "order", "address"] as const;
+const typesToDelete = ["product"] as const;
 const isConfirmed = process.argv.includes("--confirm");
 
 const main = async () => {
@@ -29,7 +29,7 @@ const main = async () => {
 
   console.log("Documents selected for deletion:");
   typesToDelete.forEach((type) => console.log(`- ${type}: ${counts[type]}`));
-  console.log("Preserved: blog, blogcategory, author");
+  console.log("Preserved: brand, category, blog, blogcategory, author, order, address");
 
   if (!isConfirmed) {
     console.log("\nDry run only. Add --confirm to permanently delete these documents.");

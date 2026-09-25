@@ -21,7 +21,7 @@ export const productType = [
   {title: "Oil & Refine", value: "oilrefine"},
   {title: "Masala", value: "masala"},
   {title: "Milk Products", value: "milkproducts"},
-  {title: "Bakery", value: "bakery"},
+  {title: "Biscuits & Bread", value: "biscuitsbread"},
   {title: "Soap & Surf", value: "soapsurf"},
   {title: "Chocolates", value: "chocolates"},
   {title: "Cold Drinks", value: "colddrinks"},

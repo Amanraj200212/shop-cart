@@ -10,6 +10,7 @@ import { readFile } from "node:fs/promises";
 import { basename, resolve } from "node:path";
 import { randomUUID } from "node:crypto";
 import { backendClient } from "../lib/backendClient";
+import { productType } from "../constants/data";
 
 const CSV_HEADERS = [
   "name",
@@ -30,7 +31,13 @@ const CSV_HEADERS = [
 type CsvHeader = (typeof CSV_HEADERS)[number];
 type SellingType = "fixed" | "loose";
 type ProductStatus = "new" | "hot" | "sale";
-type ProductVariant = "dailyuse" | "soapsurf" | "chocolates" | "colddrinks" | "others";
+type ProductVariant = (typeof productType)[number]["value"];
+
+const productVariantValues = productType.map((item) => normalizeValue(item.value));
+
+function normalizeValue(value: string) {
+  return value.trim().toLocaleLowerCase();
+}
 
 type CsvRow = Record<CsvHeader, string>;
 
@@ -214,9 +221,12 @@ const validateRow = (
   const status = (normalize(row.status) || "new") as ProductStatus;
   if (!["new", "hot", "sale"].includes(status)) throw new Error("status must be new, hot, or sale");
 
-  const variant = (normalize(row.variant) || "others") as ProductVariant;
-  if (!["dailyuse", "soapsurf", "chocolates", "colddrinks", "others"].includes(variant)) {
-    throw new Error("variant must be dailyuse, soapsurf, chocolates, colddrinks, or others");
+  const defaultVariant = productVariantValues.includes("others")
+    ? "others"
+    : productVariantValues[0];
+  const variant = (normalize(row.variant) || defaultVariant) as ProductVariant;
+  if (!variant || !productVariantValues.includes(variant)) {
+    throw new Error(`variant must be one of: ${productVariantValues.join(", ")}`);
   }
 
   const isFeatured = parseBoolean(row.isFeatured, "isFeatured");
