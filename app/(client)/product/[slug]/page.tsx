@@ -11,9 +11,11 @@ import {RxBorderSplit} from "react-icons/rx"
 import {FaRegQuestionCircle} from "react-icons/fa"
 import {FiShare2} from "react-icons/fi"
 import {TbTruckDelivery} from "react-icons/tb"
-import ProductMoreDetails from '@/components/ProductMoreDetails';
 import PriceFormatter from '@/components/PriceFormatter';
 import { isLooseProduct, ProductWithSellingType } from '@/lib/loose-products';
+import ProductCard from '@/components/ProductCard';
+import { sanityFetch } from '@/sanity/lib/live';
+import { Separator } from '@/components/ui/separator';
 
 const page = async({params}: {params: Promise<{slug: string}>}) => {
   const {slug} = await params;
@@ -21,6 +23,21 @@ const page = async({params}: {params: Promise<{slug: string}>}) => {
   if (!product) notFound();
   const productForSale = product as ProductWithSellingType;
   const isLoose = isLooseProduct(productForSale);
+  const categoryIds = product.categories?.map((category) => category._ref) ?? [];
+  const relatedProductsResult = categoryIds.length
+    ? await sanityFetch({
+        query: `*[
+          _type == "product" &&
+          _id != $productId &&
+          count(categories[@._ref in $categoryIds]) > 0
+        ] | order(isFeatured desc, name asc)[0...8] {
+          ...,
+          "categories": categories[]->title
+        }`,
+        params: { productId: product._id, categoryIds },
+      })
+    : { data: [] };
+  const relatedProducts = (relatedProductsResult.data ?? []) as ProductWithSellingType[];
 
   return (
     <div className='mx-auto px-4'>
@@ -106,7 +123,21 @@ const page = async({params}: {params: Promise<{slug: string}>}) => {
           </div>
         </div>
       </Container>
-      <ProductMoreDetails product={product}/>
+      {relatedProducts.length > 0 && (
+        <section className="pb-10">
+          <Container>
+            <h2 className="mb-5 text-xl font-semibold text-shop_dark_green">
+              Recommended Products
+            </h2>
+            <Separator className='mb-1 bg-shop_dark_green'/>
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-4">
+              {relatedProducts.map((relatedProduct) => (
+                <ProductCard key={relatedProduct._id} product={relatedProduct} />
+              ))}
+            </div>
+          </Container>
+        </section>
+      )}
     </div>
   )
 }
