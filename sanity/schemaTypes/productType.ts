@@ -1,5 +1,6 @@
 import { defineField, defineType } from "sanity";
 import { TrolleyIcon} from "@sanity/icons"
+import { productType as productTypes } from "@/constants/data";
 
 export const productType = defineType({
   name: "product",
@@ -144,13 +145,7 @@ export const productType = defineType({
       title: "Product Type",
       type: "string",
       options: {
-        list: [
-          {title: "Daily Use", value: "dailyuse"},
-          {title: "Soap & Surf", value: "soapsurf"},
-          {title: "Chocolates", value: "chocolates"},
-          {title: "Cold Drinks", value: "colddrinks"},
-          {title: "Others", value: "others"},
-        ],
+        list: productTypes,
       },
     }),
     defineField({
