@@ -26,7 +26,7 @@ const DeliveryMethodSelector = ({
   useEffect(() => {
     if (!canDeliver && deliveryMethod === "delivery") {
       if (!hasWarnedDeliveryReset.current) {
-        toast.error("Home delivery requires an order above ₹500.");
+        toast.error("Home delivery requires an order above ₹1500.");
         hasWarnedDeliveryReset.current = true;
       }
       return;
@@ -48,7 +48,7 @@ const DeliveryMethodSelector = ({
           <div className="flex gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
             <Info className="mt-0.5 size-4 shrink-0" />
             <div>
-              <p className="font-semibold">Home delivery is available for orders above ₹500.</p>
+              <p className="font-semibold">Home delivery is available for orders above ₹1500.</p>
               <p>Add {formatRupees(unlockAmount)} more to unlock home delivery.</p>
             </div>
           </div>

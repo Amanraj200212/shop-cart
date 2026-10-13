@@ -11,7 +11,7 @@ const Footer = async () => {
   const categories = await getCategories();
 
   return (
-    <footer className="bg-white border-t">
+    <footer className="bg-white border-t pb-24 md:pb-0">
       <Container>
         <FooterTop />
         <div className="py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -88,7 +88,7 @@ const Footer = async () => {
 
           {/* footer copyright and reserved */}
           <div className="py-6 border-t text-center text-sm text-gray-600 tracking-wider">
-            <div>
+            <div className="flex flex-wrap items-center justify-center gap-1">
               &copy; {new Date().getFullYear()}  
               <Logo className="text-sm"/>
               . All rights reserved.

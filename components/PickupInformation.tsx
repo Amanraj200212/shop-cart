@@ -27,6 +27,10 @@ const PickupInformation = () => {
               <span className="font-semibold text-darkColor">Opening Hours:</span>{" "}
               {STORE_PICKUP_DETAILS.openingHours}
             </p>
+            <p>
+              <span className="font-semibold text-darkColor">Mob No:</span>{" "}
+              {STORE_PICKUP_DETAILS.Mob}
+            </p>
           </div>
         </div>
       </div>

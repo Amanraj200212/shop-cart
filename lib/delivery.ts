@@ -2,12 +2,13 @@ import { Bike, CheckCircle2, Clock, PackageCheck, PackageOpen, Store } from "luc
 
 import { cn } from "@/lib/utils";
 
-export const DELIVERY_MINIMUM = 500;
+export const DELIVERY_MINIMUM = 1500;
 
 export const STORE_PICKUP_DETAILS = {
   name: "Kirana Dukan",
   address: "Yadu More, Mashrakh",
   openingHours: "Open daily, 8:00 AM - 10:00 PM",
+  Mob: "+91 9934035151"
 };
 
 export type DeliveryMethod = "delivery" | "pickup";
