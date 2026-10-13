@@ -2,9 +2,9 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Umesh Kiran dukan",
-    short_name: "Kiran dukan",
-    description: "Local grocery ordering from Umesh Kiran dukan.",
+    name: "Kirana Dukan",
+    short_name: "Kirana Dukan",
+    description: "Local grocery ordering from Kirana Dukan.",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",

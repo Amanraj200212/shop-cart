@@ -5,7 +5,7 @@ const Loading = () => {
     <div className="flex min-h-[50vh] text-shop_light_green items-center justify-center">
       <Loader2 className="w-5 h-6 animate-spin" />
       <p className="text-lg ">
-        Kiranaduka is loading, please wait...
+        Kirana Dukan is loading, please wait...
       </p>
     </div>
   )

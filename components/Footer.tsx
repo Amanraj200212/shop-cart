@@ -6,8 +6,6 @@ import { SubText, SubTitle } from "./Title";
 import { quickLinks } from "@/constants/data";
 import { getCategories } from "@/sanity/queries";
 import Link from "next/link";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
 
 const Footer = async () => {
   const categories = await getCategories();
@@ -73,7 +71,7 @@ const Footer = async () => {
             </ul>
           </div>
 
-          {/* footer Newsletter */}
+          {/* footer Newsletter
           <div className="space-y-4">
             <SubTitle className="mb-4">
               Newsletter
@@ -85,7 +83,7 @@ const Footer = async () => {
               <Input type="email" placeholder="Enter your email" required className="mb-4 p-4" />
               <Button className="w-full p-5 bg-darkColor">Subscribe</Button>
             </form>
-          </div>
+          </div> */}
         </div>
 
           {/* footer copyright and reserved */}

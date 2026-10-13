@@ -7,7 +7,7 @@ import { ClerkProvider} from '@clerk/nextjs'
 
 
 export const metadata: Metadata = {
-  title: "Shop Cart online store",
+  title: "Kirana Dukan Online Store",
   description: "All you need is here, just order and we will deliver it to your home",
 };
 

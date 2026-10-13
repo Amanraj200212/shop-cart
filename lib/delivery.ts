@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 export const DELIVERY_MINIMUM = 500;
 
 export const STORE_PICKUP_DETAILS = {
-  name: "Shop-Cart Grocery Store",
+  name: "Kirana Dukan",
   address: "Yadu More, Mashrakh",
   openingHours: "Open daily, 8:00 AM - 10:00 PM",
 };

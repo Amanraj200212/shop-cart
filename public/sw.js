@@ -2,13 +2,13 @@ self.addEventListener("push", (event) => {
   const payload = event.data
     ? event.data.json()
     : {
-        title: "Kiran dukan",
+        title: "Kirana Dukan",
         body: "You have a new notification.",
         url: "/",
       };
 
   event.waitUntil(
-    self.registration.showNotification(payload.title || "Kiran dukan", {
+    self.registration.showNotification(payload.title || "Kirana Dukan", {
       body: payload.body,
       icon: payload.icon || "/favicon.ico",
       badge: payload.badge || "/favicon.ico",
