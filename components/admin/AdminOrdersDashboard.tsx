@@ -29,6 +29,7 @@ import {
   statusBadgeClassName,
 } from "@/lib/delivery";
 import { formatWeight } from "@/lib/loose-products";
+import { getPaymentMethodLabel } from "@/lib/payment";
 import { cn } from "@/lib/utils";
 
 type AdminOrder = MY_ORDERS_QUERY_RESULT[number];
@@ -296,7 +297,7 @@ const AdminOrdersDashboard = ({ orders }: { orders: MY_ORDERS_QUERY_RESULT }) =>
                                     {order.status?.replaceAll("_", " ") || "pending"}
                                   </Badge>
                                   <p className="text-xs text-gray-500">
-                                    {order.paymentMethod === "upi_manual" ? "Manual UPI" : "Stripe"}
+                                    {getPaymentMethodLabel(order.paymentMethod)}
                                   </p>
                                   {order.upiTransactionId && (
                                     <p className="text-xs font-medium text-gray-700">

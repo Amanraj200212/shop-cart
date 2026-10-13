@@ -31,7 +31,7 @@ export type PickupOrderStatus =
 
 export type OrderStatus = DeliveryOrderStatus | PickupOrderStatus;
 
-export const qualifiesForDelivery = (subtotal: number) => subtotal > DELIVERY_MINIMUM;
+export const qualifiesForDelivery = (subtotal: number) => subtotal >= DELIVERY_MINIMUM;
 
 export const amountToUnlockDelivery = (subtotal: number) =>
   Math.max(DELIVERY_MINIMUM - subtotal, 0);

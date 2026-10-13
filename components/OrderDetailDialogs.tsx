@@ -19,6 +19,7 @@ import {
 } from '@/lib/delivery';
 import { Bike, Store } from 'lucide-react';
 import { formatWeight } from '@/lib/loose-products';
+import { getPaymentMethodLabel } from '@/lib/payment';
 
 interface OrderDetailsDailogsProps {
   order: MY_ORDERS_QUERY_RESULT[number] | null;
@@ -69,7 +70,7 @@ const OrderDetailDialogs: React.FC<OrderDetailsDailogsProps> = ({
           </p>
           <p className='capitalize'>
             <strong>Payment Method:</strong> {" "}
-            {order.paymentMethod === "upi_manual" ? "Manual UPI QR" : "Stripe Card"}
+            {getPaymentMethodLabel(order.paymentMethod)}
           </p>
           {order.upiTransactionId && (
             <p>
@@ -99,7 +100,10 @@ const OrderDetailDialogs: React.FC<OrderDetailsDailogsProps> = ({
           </div>
           <p>
             <strong>Invoice Number:</strong> {" "} 
-            {order?.invoice?.number || (order.paymentMethod === "upi_manual" ? "Manual receipt" : "N/A")}
+            {order?.invoice?.number ||
+              (order.paymentMethod === "upi_manual" || order.paymentMethod === "cash_on_delivery"
+                ? "Manual receipt"
+                : "N/A")}
           </p>
           {order?.invoice?.number && (
             <Button 

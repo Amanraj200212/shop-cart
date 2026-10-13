@@ -14,6 +14,7 @@ const SuccessContent = () => {
   const orderNumber = searchParams.get("orderNumber");
   const payment = searchParams.get("payment");
   const isManualUpi = payment === "upi";
+  const isCashOnDelivery = payment === "cod";
   
   useEffect(() => {
     if(session_id) {
@@ -46,6 +47,8 @@ const SuccessContent = () => {
           <p className="text-gray-700">
             {isManualUpi
               ? "Thank you for your order. Your UPI payment is pending verification and we will confirm it after checking the transaction."
+              : isCashOnDelivery
+                ? "Thank you for your order. Please keep the cash ready and pay when your order is delivered."
               : "Thank you for your purchase. We're processing your order and will update you soon."}
           </p>
           <p className="text-gray-700">
@@ -55,6 +58,11 @@ const SuccessContent = () => {
           {isManualUpi && (
             <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
               Keep your UPI transaction ID saved until the order is marked paid.
+            </p>
+          )}
+          {isCashOnDelivery && (
+            <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+              Your payment status will stay pending until cash is collected.
             </p>
           )}
         </div>

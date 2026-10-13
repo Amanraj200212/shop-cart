@@ -210,7 +210,7 @@ export type Order = {
   email?: string;
   customerPhone?: string;
   stripePaymentIntentId?: string;
-  paymentMethod?: "stripe" | "upi_manual";
+  paymentMethod?: "stripe" | "upi_manual" | "cash_on_delivery";
   upiTransactionId?: string;
   products?: Array<{
     product?: ProductReference;
@@ -636,7 +636,7 @@ export type MY_ORDERS_QUERY_RESULT = Array<{
   email?: string;
   customerPhone?: string;
   stripePaymentIntentId?: string;
-  paymentMethod?: "stripe" | "upi_manual";
+  paymentMethod?: "stripe" | "upi_manual" | "cash_on_delivery";
   upiTransactionId?: string;
   products: Array<{
     product: {

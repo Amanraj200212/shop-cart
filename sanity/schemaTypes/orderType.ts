@@ -70,6 +70,7 @@ export const orderType = defineType({
         list: [
           { title: "Stripe Card", value: "stripe" },
           { title: "Manual UPI QR", value: "upi_manual" },
+          { title: "Cash on Delivery", value: "cash_on_delivery" },
         ],
         layout: "radio",
       },

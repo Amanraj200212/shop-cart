@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import type { GroupedCartItem, MetaData } from "@/actions/createCheckoutSession";
 import { backendClient } from "@/lib/backendClient";
 import { isLooseProduct } from "@/lib/loose-products";
+import type { PaymentMethod } from "@/lib/payment";
 import { sendAdminNewOrderNotification } from "@/lib/push";
 
 const updateStockLevels = async (
@@ -32,10 +33,12 @@ const createManualUpiOrder = async ({
   items,
   metadata,
   upiTransactionId,
+  paymentMethod = "upi_manual",
 }: {
   items: GroupedCartItem[];
   metadata: MetaData;
-  upiTransactionId: string;
+  upiTransactionId?: string;
+  paymentMethod?: Extract<PaymentMethod, "upi_manual" | "cash_on_delivery">;
 }) => {
   const { userId } = await auth();
 
@@ -43,9 +46,9 @@ const createManualUpiOrder = async ({
     throw new Error("You must be signed in to place an order.");
   }
 
-  const transactionId = upiTransactionId.trim();
+  const transactionId = upiTransactionId?.trim() || "";
 
-  if (transactionId.length < 6) {
+  if (paymentMethod === "upi_manual" && transactionId.length < 6) {
     throw new Error("Enter a valid UPI transaction ID.");
   }
 
@@ -104,9 +107,9 @@ const createManualUpiOrder = async ({
     totalPrice,
     currency: "inr",
     amountDiscount: 0,
-    status: "pending_verification",
-    paymentMethod: "upi_manual",
-    upiTransactionId: transactionId,
+    status: paymentMethod === "upi_manual" ? "pending_verification" : "pending",
+    paymentMethod,
+    upiTransactionId: paymentMethod === "upi_manual" ? transactionId : undefined,
     deliveryMethod: metadata.deliveryMethod,
     orderStatus: "pending",
     orderDate: new Date().toISOString(),

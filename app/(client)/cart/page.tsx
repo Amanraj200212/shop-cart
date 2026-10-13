@@ -20,7 +20,12 @@ import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { AddressDocument, toShippingAddressSnapshot } from "@/lib/address";
 import { DeliveryMethod, qualifiesForDelivery } from "@/lib/delivery";
-import { PaymentMethod } from "@/lib/payment";
+import {
+  getDefaultPaymentMethod,
+  getPaymentSubmitLabel,
+  isPaymentMethodEnabled,
+} from "@/lib/payment";
+import type { PaymentMethod } from "@/lib/payment";
 import { urlFor } from "@/sanity/lib/image";
 import useStore, { CartItem } from "@/store";
 import { useAuth, useUser } from "@clerk/nextjs";
@@ -79,7 +84,7 @@ const CartPage = () => {
   const {user} = useUser();
   const [selectedAddress, setSelectedAddress] = useState<AddressDocument | null>(null);
   const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("pickup");
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("stripe");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(getDefaultPaymentMethod);
   const [pickupFullName, setPickupFullName] = useState(user?.fullName || "");
   const [pickupPhone, setPickupPhone] = useState(user?.primaryPhoneNumber?.phoneNumber || "");
   const [upiTransactionId, setUpiTransactionId] = useState("");
@@ -112,6 +117,13 @@ const CartPage = () => {
     const timer = window.setTimeout(() => setDeliveryMethod("pickup"), 0);
     return () => window.clearTimeout(timer);
   }, [canDeliver, deliveryMethod]);
+
+  useEffect(() => {
+    if (isPaymentMethodEnabled(paymentMethod)) return;
+
+    const timer = window.setTimeout(() => setPaymentMethod(getDefaultPaymentMethod()), 0);
+    return () => window.clearTimeout(timer);
+  }, [paymentMethod]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -158,6 +170,11 @@ const CartPage = () => {
       return;
     }
 
+    if (!isPaymentMethodEnabled(paymentMethod)) {
+      toast.error("Please select an available payment method.");
+      return;
+    }
+
     setIsLoading(true);
     try {
       const metaData: MetaData = {
@@ -176,15 +193,24 @@ const CartPage = () => {
         address: checkoutDeliveryMethod === "delivery" ? toShippingAddressSnapshot(selectedAddress) : null,
       };
 
-      if (paymentMethod === "upi_manual") {
+      if (paymentMethod === "upi_manual" || paymentMethod === "cash_on_delivery") {
         await createManualUpiOrder({
           items: groupedItems,
           metadata: metaData,
           upiTransactionId,
+          paymentMethod,
         });
         resetCart();
-        toast.success("Order placed. Payment is pending verification.");
-        router.push(`/success?orderNumber=${metaData.orderNumber}&payment=upi`);
+        toast.success(
+          paymentMethod === "upi_manual"
+            ? "Order placed. Payment is pending verification."
+            : "Order placed. Please pay cash on delivery."
+        );
+        router.push(
+          `/success?orderNumber=${metaData.orderNumber}&payment=${
+            paymentMethod === "upi_manual" ? "upi" : "cod"
+          }`
+        );
         return;
       }
 
@@ -437,9 +463,7 @@ const CartPage = () => {
                           >
                             {isLoading
                               ? 'Your order is processing...'
-                              : paymentMethod === "upi_manual"
-                                ? "Place UPI Order"
-                                : 'Proceed to checkout'}
+                              : getPaymentSubmitLabel(paymentMethod)}
                           </Button>
                         </div>
                       </div>
@@ -499,9 +523,7 @@ const CartPage = () => {
                           >
                             {isLoading
                               ? ''
-                              : paymentMethod === "upi_manual"
-                                ? "Place UPI Order"
-                                : 'Proceed to checkout'}
+                              : getPaymentSubmitLabel(paymentMethod)}
                           </Button>
                         </div>
                       </div>

@@ -5,7 +5,13 @@ import { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DeliveryMethod, amountToUnlockDelivery, formatRupees, qualifiesForDelivery } from "@/lib/delivery";
+import {
+  DELIVERY_MINIMUM,
+  DeliveryMethod,
+  amountToUnlockDelivery,
+  formatRupees,
+  qualifiesForDelivery,
+} from "@/lib/delivery";
 import { cn } from "@/lib/utils";
 
 interface DeliveryMethodSelectorProps {
@@ -26,7 +32,7 @@ const DeliveryMethodSelector = ({
   useEffect(() => {
     if (!canDeliver && deliveryMethod === "delivery") {
       if (!hasWarnedDeliveryReset.current) {
-        toast.error("Home delivery requires an order above ₹1500.");
+        toast.error(`Home delivery requires an order of ${formatRupees(DELIVERY_MINIMUM)} or more.`);
         hasWarnedDeliveryReset.current = true;
       }
       return;
@@ -48,7 +54,9 @@ const DeliveryMethodSelector = ({
           <div className="flex gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
             <Info className="mt-0.5 size-4 shrink-0" />
             <div>
-              <p className="font-semibold">Home delivery is available for orders above ₹1500.</p>
+              <p className="font-semibold">
+                Home delivery is available for orders of {formatRupees(DELIVERY_MINIMUM)} or more.
+              </p>
               <p>Add {formatRupees(unlockAmount)} more to unlock home delivery.</p>
             </div>
           </div>
