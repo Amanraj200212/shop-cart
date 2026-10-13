@@ -83,9 +83,28 @@ const CartPage = () => {
   const [pickupFullName, setPickupFullName] = useState(user?.fullName || "");
   const [pickupPhone, setPickupPhone] = useState(user?.primaryPhoneNumber?.phoneNumber || "");
   const [upiTransactionId, setUpiTransactionId] = useState("");
+  const [checkoutAttempted, setCheckoutAttempted] = useState(false);
   const subtotal = getTotalPrice();
   const canDeliver = qualifiesForDelivery(subtotal);
   const checkoutDeliveryMethod: DeliveryMethod = canDeliver ? deliveryMethod : "pickup";
+  const hasPickupNameError = checkoutDeliveryMethod === "pickup" && !pickupFullName.trim();
+  const hasPickupPhoneError =
+    checkoutDeliveryMethod === "pickup" &&
+    !/^(?:\+91[\s-]?|91[\s-]?)?[6-9]\d{9}$/.test(pickupPhone.trim());
+  const hasUpiTransactionError =
+    paymentMethod === "upi_manual" && upiTransactionId.trim().length < 6;
+  const showPickupNameError = checkoutAttempted && hasPickupNameError;
+  const showPickupPhoneError = checkoutAttempted && hasPickupPhoneError;
+  const showUpiTransactionError = checkoutAttempted && hasUpiTransactionError;
+
+  const scrollToCheckoutError = (elementId: string) => {
+    window.setTimeout(() => {
+      document.getElementById(elementId)?.scrollIntoView({
+        block: "center",
+        behavior: "smooth",
+      });
+    }, 0);
+  };
 
   useEffect(() => {
     if (canDeliver || deliveryMethod === "pickup") return;
@@ -112,25 +131,30 @@ const CartPage = () => {
   }
 
   const handleCheckOut = async() => {
+    setCheckoutAttempted(true);
+
     if (checkoutDeliveryMethod === "delivery" && !selectedAddress) {
       toast.error("Please select or add a delivery address");
       return;
     }
 
     if (checkoutDeliveryMethod === "pickup") {
-      if (!pickupFullName.trim()) {
+      if (hasPickupNameError) {
         toast.error("Please enter your full name for store pickup");
+        scrollToCheckoutError("pickup-contact-details");
         return;
       }
 
-      if (!/^(?:\+91[\s-]?|91[\s-]?)?[6-9]\d{9}$/.test(pickupPhone.trim())) {
+      if (hasPickupPhoneError) {
         toast.error("Please enter a valid mobile number for store pickup");
+        scrollToCheckoutError("pickup-contact-details");
         return;
       }
     }
 
-    if (paymentMethod === "upi_manual" && upiTransactionId.trim().length < 6) {
+    if (hasUpiTransactionError) {
       toast.error("Please enter your UPI transaction ID after payment");
+      scrollToCheckoutError("upi-payment-details");
       return;
     }
 
@@ -434,6 +458,8 @@ const CartPage = () => {
                                 phone={pickupPhone}
                                 onFullNameChange={setPickupFullName}
                                 onPhoneChange={setPickupPhone}
+                                fullNameError={showPickupNameError}
+                                phoneError={showPickupPhoneError}
                               />
                               <PickupInformation />
                             </div>
@@ -444,6 +470,7 @@ const CartPage = () => {
                                 amount={getTotalPrice()}
                                 transactionId={upiTransactionId}
                                 onTransactionIdChange={setUpiTransactionId}
+                                transactionIdError={showUpiTransactionError}
                               />
                             </div>
                           )}

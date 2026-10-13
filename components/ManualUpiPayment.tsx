@@ -8,17 +8,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UPI_PAYMENT_DETAILS } from "@/lib/payment";
+import { cn } from "@/lib/utils";
 
 interface ManualUpiPaymentProps {
   amount: number;
   transactionId: string;
   onTransactionIdChange: (value: string) => void;
+  transactionIdError?: boolean;
 }
 
 const ManualUpiPayment = ({
   amount,
   transactionId,
   onTransactionIdChange,
+  transactionIdError,
 }: ManualUpiPaymentProps) => {
   const handleCopyUpiId = async () => {
     try {
@@ -30,7 +33,13 @@ const ManualUpiPayment = ({
   };
 
   return (
-    <div className="rounded-lg border bg-white p-4">
+    <div
+      id="upi-payment-details"
+      className={cn(
+        "rounded-lg border bg-white p-4",
+        transactionIdError && "border-red-300 bg-red-50/40 ring-2 ring-red-100"
+      )}
+    >
       <div className="mb-4">
         <h3 className="font-semibold text-shop_dark_green">UPI QR Payment</h3>
         <p className="text-sm text-gray-500">
@@ -80,8 +89,14 @@ const ManualUpiPayment = ({
               value={transactionId}
               onChange={(event) => onTransactionIdChange(event.target.value)}
               placeholder="Enter UPI reference / transaction ID"
-              className="h-10"
+              aria-invalid={transactionIdError}
+              className={cn("h-10", transactionIdError && "border-red-500 bg-red-50")}
             />
+            {transactionIdError && (
+              <p className="text-sm font-medium text-red-600">
+                Enter your UPI transaction ID after payment.
+              </p>
+            )}
           </div>
         </div>
       </div>
