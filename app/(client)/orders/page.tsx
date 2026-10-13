@@ -10,6 +10,7 @@ import NoAccess from '@/components/NoAccess';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Table, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import OrdersComponent from '@/components/OrdersComponent';
+import PushNotificationToggle from '@/components/PushNotificationToggle';
 
 const OrderPage = async() => {
   const {userId} = await auth();
@@ -27,6 +28,12 @@ const OrderPage = async() => {
   return (
     <div>
       <Container className='py-10'>
+        <PushNotificationToggle
+          role='customer'
+          title='Order status push notifications'
+          description='Enable browser notifications on this device for updates to your orders.'
+          className='mb-5'
+        />
         {orders?.length ? (
           <Card className='w-full'>
             <CardHeader>

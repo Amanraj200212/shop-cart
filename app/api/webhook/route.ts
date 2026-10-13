@@ -1,6 +1,7 @@
 import { MetaData, ShippingAddressSnapshot } from "@/actions/createCheckoutSession";
 import { backendClient } from "@/lib/backendClient";
 import { DeliveryMethod, isAllowedOrderStatus } from "@/lib/delivery";
+import { sendAdminNewOrderNotification } from "@/lib/push";
 import stripe from "@/lib/strips";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
@@ -77,6 +78,16 @@ async function createOrderInSanity(
     deliveryMethod,
     address
   } = metadata as unknown as MetaData & {address: string};
+
+  const existingOrder = await backendClient.fetch<{ _id: string } | null>(
+    `*[_type == "order" && stripeCheckoutSessionId == $id][0]{_id}`,
+    { id }
+  );
+
+  if (existingOrder?._id) {
+    return existingOrder;
+  }
+
   const parsedAddress = address ? (JSON.parse(address) as ShippingAddressSnapshot | null) : null;
   const orderDeliveryMethod: DeliveryMethod =
     deliveryMethod === "delivery" ? "delivery" : "pickup";
@@ -170,6 +181,15 @@ async function createOrderInSanity(
 
   //update stock levels in sanity
   await updateStockLevels (stockUpdate);
+
+  sendAdminNewOrderNotification({
+    orderId: order._id,
+    orderNumber: order.orderNumber,
+    totalPrice: order.totalPrice,
+  }).catch((error) => {
+    console.error("Failed to send admin Stripe-order push notification:", error);
+  });
+
   return order;
 }
 

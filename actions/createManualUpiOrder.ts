@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import type { GroupedCartItem, MetaData } from "@/actions/createCheckoutSession";
 import { backendClient } from "@/lib/backendClient";
 import { isLooseProduct } from "@/lib/loose-products";
+import { sendAdminNewOrderNotification } from "@/lib/push";
 
 const updateStockLevels = async (
   stockUpdates: { productId: string; quantity: number }[]
@@ -132,6 +133,14 @@ const createManualUpiOrder = async ({
   await updateStockLevels(stockUpdate);
   revalidatePath("/admin/orders");
   revalidatePath("/orders");
+
+  sendAdminNewOrderNotification({
+    orderId: order._id,
+    orderNumber: order.orderNumber,
+    totalPrice: order.totalPrice,
+  }).catch((error) => {
+    console.error("Failed to send admin new-order push notification:", error);
+  });
 
   return order;
 };

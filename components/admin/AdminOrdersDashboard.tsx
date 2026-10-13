@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Bike, CalendarDays, ChevronDown, Package, Phone, Store, User } from "lucide-react";
 import toast from "react-hot-toast";
@@ -73,9 +73,29 @@ const getOrdersForTab = (orders: AdminOrder[], tab: AdminTab) => {
   }
 };
 
+const getTabForStatus = (status: OrderStatus): AdminTab => {
+  if (["pending", "confirmed"].includes(status)) return "new";
+  if (status === "preparing") return "preparing";
+  if (status === "ready_for_pickup") return "ready";
+  if (status === "out_for_delivery") return "out";
+  if (["delivered", "picked_up"].includes(status)) return "completed";
+  if (status === "cancelled") return "cancelled";
+  return "all";
+};
+
+const getInitialAdminTab = (orders: AdminOrder[]): AdminTab => {
+  if (typeof window === "undefined") return "new";
+
+  const orderId = new URLSearchParams(window.location.search).get("orderId");
+  if (!orderId) return "new";
+
+  const matchedOrder = orders.find((order) => order._id === orderId);
+  return matchedOrder ? getTabForStatus(getOrderStatus(matchedOrder)) : "new";
+};
+
 const AdminOrdersDashboard = ({ orders }: { orders: MY_ORDERS_QUERY_RESULT }) => {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<AdminTab>("new");
+  const [activeTab, setActiveTab] = useState<AdminTab>(() => getInitialAdminTab(orders));
   const [localOrders, setLocalOrders] = useState(orders);
   const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -93,6 +113,18 @@ const AdminOrdersDashboard = ({ orders }: { orders: MY_ORDERS_QUERY_RESULT }) =>
       ),
     [localOrders]
   );
+
+  useEffect(() => {
+    const orderId = new URLSearchParams(window.location.search).get("orderId");
+    if (!orderId) return;
+
+    window.setTimeout(() => {
+      document.getElementById(`admin-order-${orderId}`)?.scrollIntoView({
+        block: "center",
+        behavior: "smooth",
+      });
+    }, 100);
+  }, [localOrders]);
 
   const handleStatusChange = (order: AdminOrder, orderStatus: OrderStatus) => {
     const deliveryMethod = getDeliveryMethod(order);
@@ -209,7 +241,11 @@ const AdminOrdersDashboard = ({ orders }: { orders: MY_ORDERS_QUERY_RESULT }) =>
                           const customerPhone = order.customerPhone || order.address?.phone || "N/A";
 
                           return (
-                            <TableRow key={order._id} className="align-top">
+                            <TableRow
+                              key={order._id}
+                              id={`admin-order-${order._id}`}
+                              className="align-top"
+                            >
                               <TableCell className="min-w-40 font-medium">
                                 {order.orderNumber?.slice(-10) || "N/A"}
                               </TableCell>

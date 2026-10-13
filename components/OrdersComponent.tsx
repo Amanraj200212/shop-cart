@@ -13,7 +13,14 @@ import { Badge } from './ui/badge'
 import { DeliveryMethod, getDeliveryMethodLabel } from '@/lib/delivery'
 
 const OrdersComponent = ({orders}: {orders: MY_ORDERS_QUERY_RESULT}) => {
-  const [selectedOrder, setSelectedOrder] = useState<MY_ORDERS_QUERY_RESULT[number] | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<MY_ORDERS_QUERY_RESULT[number] | null>(() => {
+    if (typeof window === "undefined") return null;
+
+    const orderId = new URLSearchParams(window.location.search).get("orderId");
+    if (!orderId) return null;
+
+    return orders?.find((order) => order._id === orderId) ?? null;
+  });
 
   const handleDelete = () => {
     toast.error("Delete method applied for admin")
@@ -27,6 +34,7 @@ const OrdersComponent = ({orders}: {orders: MY_ORDERS_QUERY_RESULT}) => {
             <Tooltip key={order?.orderNumber}>
               <TooltipTrigger asChild>
                 <TableRow 
+                  id={`order-${order._id}`}
                   className='cursor-pointer hover:bg-gray-100 h-12'
                   onClick={() => setSelectedOrder(order)}
                 >

@@ -275,6 +275,27 @@ export const orderType = defineType({
       type: "datetime",
       validation: (Rule) => Rule.required(),
     }),
+    defineField({
+      name: "adminNewOrderNotificationSentAt",
+      title: "Admin New Order Notification Sent At",
+      type: "datetime",
+      readOnly: true,
+      hidden: true,
+    }),
+    defineField({
+      name: "customerStatusNotificationSentAt",
+      title: "Customer Status Notification Sent At",
+      type: "datetime",
+      readOnly: true,
+      hidden: true,
+    }),
+    defineField({
+      name: "customerStatusNotificationStatus",
+      title: "Customer Status Notification Status",
+      type: "string",
+      readOnly: true,
+      hidden: true,
+    }),
   ],
   preview: {
     select: {

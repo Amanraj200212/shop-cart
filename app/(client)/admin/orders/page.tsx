@@ -1,6 +1,7 @@
 import Container from "@/components/Container";
 import NoAccess from "@/components/NoAccess";
 import AdminOrdersDashboard from "@/components/admin/AdminOrdersDashboard";
+import PushNotificationToggle from "@/components/PushNotificationToggle";
 import { getAdminAccess } from "@/lib/admin";
 import { getAllOrders } from "@/sanity/queries";
 
@@ -23,6 +24,12 @@ const AdminOrdersPage = async () => {
           Manage local delivery and store pickup orders from one place.
         </p>
       </div>
+      <PushNotificationToggle
+        role="admin"
+        title="New-order push notifications"
+        description="Enable browser notifications on this device for successfully placed orders."
+        className="mb-5"
+      />
       <AdminOrdersDashboard orders={orders} />
     </Container>
   );
