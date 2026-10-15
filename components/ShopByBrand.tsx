@@ -9,22 +9,22 @@ import { GitCompareArrows, Headset, ShieldCheck, Truck } from 'lucide-react'
 const extraData = [
   {
     title: "Free Delivery",
-    description: " Free shipping over $249",
+    description: " Free shipping over ₹1500",
     icon: <Truck size={45} />
   },
   {
     title: "Free Return",
-    description: " Free shipping over $249",
+    description: " Free shipping over ₹1500",
     icon: <GitCompareArrows size={45} />
   },
   {
     title: "Customer Support",
-    description: "Friendly 24/7 customer support",
+    description: "During 9AM - 10PM customer support",
     icon: <Headset size={45} />
   },
   {
     title: "Money Back Guarantee",
-    description: " Quality checked by our tea,",
+    description: "some Products are eligible for money back guarantee",
     icon: <ShieldCheck size={45} />
   },
 ]

@@ -15,6 +15,30 @@
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: schema.json
+export type PushSubscription = {
+  _id: string;
+  _type: "pushSubscription";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  role?: "admin" | "customer";
+  userId?: string;
+  adminEmail?: string;
+  endpoint?: string;
+  subscription?: {
+    endpoint?: string;
+    expirationTime?: number;
+    keys?: {
+      p256dh?: string;
+      auth?: string;
+    };
+  };
+  active?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  lastFailure?: string;
+};
+
 export type Address = {
   _id: string;
   _type: "address";
@@ -85,6 +109,7 @@ export type Blog = {
   _rev: string;
   title?: string;
   slug?: Slug;
+  description?: string;
   author?: AuthorReference;
   mainImage?: {
     asset?: SanityImageAssetReference;
@@ -215,21 +240,14 @@ export type Order = {
   products?: Array<{
     product?: ProductReference;
     quantity?: number;
+    selectedWeightGrams?: number;
+    pricePerKg?: number;
+    linePrice?: number;
     _key: string;
   }>;
   totalPrice?: number;
   currency?: string;
   amountDiscount?: number;
-  deliveryMethod?: "delivery" | "pickup";
-  orderStatus?:
-    | "pending"
-    | "confirmed"
-    | "preparing"
-    | "out_for_delivery"
-    | "delivered"
-    | "ready_for_pickup"
-    | "picked_up"
-    | "cancelled";
   address?: {
     fullName?: string;
     email?: string;
@@ -253,7 +271,20 @@ export type Order = {
     | "out_for_delivery"
     | "delivered"
     | "cancelled";
+  deliveryMethod?: "delivery" | "pickup";
+  orderStatus?:
+    | "pending"
+    | "confirmed"
+    | "preparing"
+    | "out_for_delivery"
+    | "delivered"
+    | "ready_for_pickup"
+    | "picked_up"
+    | "cancelled";
   orderDate?: string;
+  adminNewOrderNotificationSentAt?: string;
+  customerStatusNotificationSentAt?: string;
+  customerStatusNotificationStatus?: string;
 };
 
 export type CategoryReference = {
@@ -287,7 +318,10 @@ export type Product = {
     _key: string;
   }>;
   description?: string;
+  sellingType?: "fixed" | "loose";
   price?: number;
+  pricePerKg?: number;
+  weightIncrement?: number;
   discount?: number;
   categories?: Array<
     {
@@ -297,7 +331,16 @@ export type Product = {
   stock?: number;
   brand?: BrandReference;
   status?: "new" | "hot" | "sale";
-  variant?: "gadget" | "appliances" | "refrigerators" | "others";
+  variant?:
+    | "dailyuse"
+    | "oilrefine"
+    | "masala"
+    | "milkproducts"
+    | "biscuitsbread"
+    | "soapsurf"
+    | "chocolates"
+    | "colddrinks"
+    | "others";
   isFeatured?: boolean;
 };
 
@@ -438,6 +481,7 @@ export type Geopoint = {
 };
 
 export type AllSanitySchemaTypes =
+  | PushSubscription
   | Address
   | Blogcategory
   | Slug
@@ -485,13 +529,25 @@ export type SEARCH_PRODUCTS_QUERY_RESULT = Array<{
     _key: string;
   }>;
   description?: string;
+  sellingType?: "fixed" | "loose";
   price?: number;
+  pricePerKg?: number;
+  weightIncrement?: number;
   discount?: number;
   categories: Array<string | null> | null;
   stock?: number;
   brand?: BrandReference;
   status?: "hot" | "new" | "sale";
-  variant?: "appliances" | "gadget" | "others" | "refrigerators";
+  variant?:
+    | "biscuitsbread"
+    | "chocolates"
+    | "colddrinks"
+    | "dailyuse"
+    | "masala"
+    | "milkproducts"
+    | "oilrefine"
+    | "others"
+    | "soapsurf";
   isFeatured?: boolean;
 }>;
 
@@ -527,6 +583,7 @@ export type LATEST_BLOG_QUERY_RESULT = Array<{
   _rev: string;
   title?: string;
   slug?: Slug;
+  description?: string;
   author?: AuthorReference;
   mainImage?: {
     asset?: SanityImageAssetReference;
@@ -563,13 +620,25 @@ export type DEAL_PRODUCTS_RESULT = Array<{
     _key: string;
   }>;
   description?: string;
+  sellingType?: "fixed" | "loose";
   price?: number;
+  pricePerKg?: number;
+  weightIncrement?: number;
   discount?: number;
   categories: Array<string | null> | null;
   stock?: number;
   brand?: BrandReference;
   status: "hot";
-  variant?: "appliances" | "gadget" | "others" | "refrigerators";
+  variant?:
+    | "biscuitsbread"
+    | "chocolates"
+    | "colddrinks"
+    | "dailyuse"
+    | "masala"
+    | "milkproducts"
+    | "oilrefine"
+    | "others"
+    | "soapsurf";
   isFeatured?: boolean;
 }>;
 
@@ -593,7 +662,10 @@ export type PRODUCT_BY_SLUG_QUERY_RESULT = {
     _key: string;
   }>;
   description?: string;
+  sellingType?: "fixed" | "loose";
   price?: number;
+  pricePerKg?: number;
+  weightIncrement?: number;
   discount?: number;
   categories?: Array<
     {
@@ -603,7 +675,16 @@ export type PRODUCT_BY_SLUG_QUERY_RESULT = {
   stock?: number;
   brand?: BrandReference;
   status?: "hot" | "new" | "sale";
-  variant?: "appliances" | "gadget" | "others" | "refrigerators";
+  variant?:
+    | "biscuitsbread"
+    | "chocolates"
+    | "colddrinks"
+    | "dailyuse"
+    | "masala"
+    | "milkproducts"
+    | "oilrefine"
+    | "others"
+    | "soapsurf";
   isFeatured?: boolean;
 } | null;
 
@@ -636,7 +717,7 @@ export type MY_ORDERS_QUERY_RESULT = Array<{
   email?: string;
   customerPhone?: string;
   stripePaymentIntentId?: string;
-  paymentMethod?: "stripe" | "upi_manual" | "cash_on_delivery";
+  paymentMethod?: "cash_on_delivery" | "stripe" | "upi_manual";
   upiTransactionId?: string;
   products: Array<{
     product: {
@@ -656,7 +737,10 @@ export type MY_ORDERS_QUERY_RESULT = Array<{
         _key: string;
       }>;
       description?: string;
+      sellingType?: "fixed" | "loose";
       price?: number;
+      pricePerKg?: number;
+      weightIncrement?: number;
       discount?: number;
       categories?: Array<
         {
@@ -666,25 +750,27 @@ export type MY_ORDERS_QUERY_RESULT = Array<{
       stock?: number;
       brand?: BrandReference;
       status?: "hot" | "new" | "sale";
-      variant?: "appliances" | "gadget" | "others" | "refrigerators";
+      variant?:
+        | "biscuitsbread"
+        | "chocolates"
+        | "colddrinks"
+        | "dailyuse"
+        | "masala"
+        | "milkproducts"
+        | "oilrefine"
+        | "others"
+        | "soapsurf";
       isFeatured?: boolean;
     } | null;
     quantity?: number;
+    selectedWeightGrams?: number;
+    pricePerKg?: number;
+    linePrice?: number;
     _key: string;
   }> | null;
   totalPrice?: number;
   currency?: string;
   amountDiscount?: number;
-  deliveryMethod?: "delivery" | "pickup";
-  orderStatus?:
-    | "cancelled"
-    | "confirmed"
-    | "delivered"
-    | "out_for_delivery"
-    | "pending"
-    | "picked_up"
-    | "preparing"
-    | "ready_for_pickup";
   address?: {
     fullName?: string;
     email?: string;
@@ -704,11 +790,139 @@ export type MY_ORDERS_QUERY_RESULT = Array<{
     | "delivered"
     | "out_for_delivery"
     | "paid"
-    | "pending"
     | "pending_verification"
+    | "pending"
     | "processing"
     | "shipped";
+  deliveryMethod?: "delivery" | "pickup";
+  orderStatus?:
+    | "cancelled"
+    | "confirmed"
+    | "delivered"
+    | "out_for_delivery"
+    | "pending"
+    | "picked_up"
+    | "preparing"
+    | "ready_for_pickup";
   orderDate?: string;
+  adminNewOrderNotificationSentAt?: string;
+  customerStatusNotificationSentAt?: string;
+  customerStatusNotificationStatus?: string;
+}>;
+
+// Source: sanity/queries/query.ts
+// Variable: ALL_ORDERS_QUERY
+// Query: *[_type == 'order'] | order(orderDate desc){...,products[]{  ...,product->}}
+export type ALL_ORDERS_QUERY_RESULT = Array<{
+  _id: string;
+  _type: "order";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  orderNumber?: string;
+  invoice?: {
+    id?: string;
+    number?: string;
+    hosted_invoice_url?: string;
+  };
+  stripeCheckoutSessionId?: string;
+  stripeCustomerId?: string;
+  clerkUserId?: string;
+  customerName?: string;
+  email?: string;
+  customerPhone?: string;
+  stripePaymentIntentId?: string;
+  paymentMethod?: "cash_on_delivery" | "stripe" | "upi_manual";
+  upiTransactionId?: string;
+  products: Array<{
+    product: {
+      _id: string;
+      _type: "product";
+      _createdAt: string;
+      _updatedAt: string;
+      _rev: string;
+      name?: string;
+      slug?: Slug;
+      images?: Array<{
+        asset?: SanityImageAssetReference;
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        _type: "image";
+        _key: string;
+      }>;
+      description?: string;
+      sellingType?: "fixed" | "loose";
+      price?: number;
+      pricePerKg?: number;
+      weightIncrement?: number;
+      discount?: number;
+      categories?: Array<
+        {
+          _key: string;
+        } & CategoryReference
+      >;
+      stock?: number;
+      brand?: BrandReference;
+      status?: "hot" | "new" | "sale";
+      variant?:
+        | "biscuitsbread"
+        | "chocolates"
+        | "colddrinks"
+        | "dailyuse"
+        | "masala"
+        | "milkproducts"
+        | "oilrefine"
+        | "others"
+        | "soapsurf";
+      isFeatured?: boolean;
+    } | null;
+    quantity?: number;
+    selectedWeightGrams?: number;
+    pricePerKg?: number;
+    linePrice?: number;
+    _key: string;
+  }> | null;
+  totalPrice?: number;
+  currency?: string;
+  amountDiscount?: number;
+  address?: {
+    fullName?: string;
+    email?: string;
+    phone?: string;
+    state?: string;
+    pinCode?: string;
+    zip?: string;
+    city?: string;
+    address?: string;
+    addressLine2?: string;
+    country?: string;
+    latitude?: number;
+    longitude?: number;
+  };
+  status?:
+    | "cancelled"
+    | "delivered"
+    | "out_for_delivery"
+    | "paid"
+    | "pending_verification"
+    | "pending"
+    | "processing"
+    | "shipped";
+  deliveryMethod?: "delivery" | "pickup";
+  orderStatus?:
+    | "cancelled"
+    | "confirmed"
+    | "delivered"
+    | "out_for_delivery"
+    | "pending"
+    | "picked_up"
+    | "preparing"
+    | "ready_for_pickup";
+  orderDate?: string;
+  adminNewOrderNotificationSentAt?: string;
+  customerStatusNotificationSentAt?: string;
+  customerStatusNotificationStatus?: string;
 }>;
 
 // Source: sanity/queries/query.ts
@@ -722,6 +936,7 @@ export type GET_ALL_BLOG_RESULT = Array<{
   _rev: string;
   title?: string;
   slug?: Slug;
+  description?: string;
   author?: AuthorReference;
   mainImage?: {
     asset?: SanityImageAssetReference;
@@ -749,6 +964,7 @@ export type SINGLE_BLOG_QUERY_RESULT = {
   _rev: string;
   title?: string;
   slug?: Slug;
+  description?: string;
   author: {
     name: string | null;
     image: {
@@ -871,8 +1087,7 @@ export type USER_ADDRESS_BY_ID_QUERY_RESULT = {
 export type USER_DEFAULT_ADDRESS_IDS_QUERY_RESULT = Array<string>;
 
 // Query TypeMap
-import "@sanity/client";
-declare module "@sanity/client" {
+declare global {
   interface SanityQueries {
     '\n  *[\n    _type == "product" &&\n    (\n      name match $searchTerm ||\n      description match $searchTerm ||\n      brand->title match $searchTerm ||\n      count(categories[@->title match $searchTerm]) > 0\n    )\n  ] | order(name asc) {\n    ...,\n    "categories": categories[]->title\n  }\n': SEARCH_PRODUCTS_QUERY_RESULT;
     "*[_type=='brand'] | order(name asc) ": BRANDS_QUERY_RESULT;
@@ -881,6 +1096,7 @@ declare module "@sanity/client" {
     '*[_type == "product" && slug.current == $slug] | order(name asc) [0]': PRODUCT_BY_SLUG_QUERY_RESULT;
     '*[_type == "product" && slug.current == $slug]{\n  "brandName": brand->title\n  }': BRAND_QUERY_RESULT;
     "*[_type == 'order' && clerkUserId == $userId] | order(orderDate desc){\n...,products[]{\n  ...,product->\n}\n}": MY_ORDERS_QUERY_RESULT;
+    "*[_type == 'order'] | order(orderDate desc){\n...,products[]{\n  ...,product->\n}\n}": ALL_ORDERS_QUERY_RESULT;
     "*[_type == 'blog'] | order(publishedAt desc)[0...$quantity]{\n  ...,  \n     blogcategories[]->{\n    title\n}\n    }\n  ": GET_ALL_BLOG_RESULT;
     '*[_type == "blog" && slug.current == $slug][0]{\n  ..., \n    author->{\n    name,\n    image,\n  },\n  blogcategories[]->{\n    title,\n    "slug": slug.current,\n  },\n}': SINGLE_BLOG_QUERY_RESULT;
     '*[_type == "blog"]{\n     blogcategories[]->{\n    ...\n    }\n  }': BLOG_CATEGORIES_RESULT;
@@ -889,4 +1105,8 @@ declare module "@sanity/client" {
     '*[_type == "address" && _id == $id && userId == $userId][0] {\n  \n  _id,\n  _type,\n  userId,\n  name,\n  fullName,\n  email,\n  phone,\n  address,\n  addressLine2,\n  city,\n  state,\n  pinCode,\n  zip,\n  country,\n  default,\n  latitude,\n  longitude,\n  createdAt\n\n}': USER_ADDRESS_BY_ID_QUERY_RESULT;
     '*[_type == "address" && userId == $userId && default == true && (!defined($exceptId) || _id != $exceptId)]._id': USER_DEFAULT_ADDRESS_IDS_QUERY_RESULT;
   }
+}
+// Lets @sanity/client releases that predate the global registry read it too
+declare module "@sanity/client" {
+  interface SanityQueries extends globalThis.SanityQueries {}
 }

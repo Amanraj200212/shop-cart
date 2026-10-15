@@ -7,10 +7,32 @@ import {
 } from "@/sanity/queries";
 import dayjs from "dayjs";
 import { Calendar, ChevronLeftIcon, Pencil } from "lucide-react";
+import { Metadata } from "next";
 import { PortableText } from "next-sanity";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+export async function generateMetadata({
+  params,
+} : {
+  params: Promise<{ slug: string }>;
+}) : Promise<Metadata> {
+  const { slug } = await params;
+  const blog = await getSingleBlog(slug);
+
+  if(!blog) {
+    return {
+      title: "Blog Not Found",
+      description: "The requested blog post could not be found.",
+    };
+  }
+  
+  return {
+    title: `${blog.title} | Raj Grocery`,
+    description: blog.description,
+  }
+}
 
 const SingleBlogPage = async ({
   params,

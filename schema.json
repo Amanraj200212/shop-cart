@@ -1,5 +1,154 @@
 [
   {
+    "name": "pushSubscription",
+    "type": "document",
+    "attributes": {
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "pushSubscription"
+        }
+      },
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "role": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "admin"
+            },
+            {
+              "type": "string",
+              "value": "customer"
+            }
+          ]
+        },
+        "optional": true
+      },
+      "userId": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "adminEmail": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "endpoint": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "subscription": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "object",
+          "attributes": {
+            "endpoint": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
+              },
+              "optional": true
+            },
+            "expirationTime": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "number"
+              },
+              "optional": true
+            },
+            "keys": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "object",
+                "attributes": {
+                  "p256dh": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "string"
+                    },
+                    "optional": true
+                  },
+                  "auth": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "string"
+                    },
+                    "optional": true
+                  }
+                }
+              },
+              "optional": true
+            }
+          }
+        },
+        "optional": true
+      },
+      "active": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "boolean"
+        },
+        "optional": true
+      },
+      "createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "lastFailure": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      }
+    }
+  },
+  {
     "name": "address",
     "type": "document",
     "attributes": {
@@ -388,6 +537,13 @@
         "value": {
           "type": "inline",
           "name": "slug"
+        },
+        "optional": true
+      },
+      "description": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
         },
         "optional": true
       },
@@ -1191,7 +1347,42 @@
         },
         "optional": true
       },
+      "customerPhone": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
       "stripePaymentIntentId": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "paymentMethod": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "stripe"
+            },
+            {
+              "type": "string",
+              "value": "upi_manual"
+            },
+            {
+              "type": "string",
+              "value": "cash_on_delivery"
+            }
+          ]
+        },
+        "optional": true
+      },
+      "upiTransactionId": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
@@ -1214,6 +1405,27 @@
                 "optional": true
               },
               "quantity": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "number"
+                },
+                "optional": true
+              },
+              "selectedWeightGrams": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "number"
+                },
+                "optional": true
+              },
+              "pricePerKg": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "number"
+                },
+                "optional": true
+              },
+              "linePrice": {
                 "type": "objectAttribute",
                 "value": {
                   "type": "number"
@@ -1361,6 +1573,10 @@
             },
             {
               "type": "string",
+              "value": "pending_verification"
+            },
+            {
+              "type": "string",
               "value": "processing"
             },
             {
@@ -1387,7 +1603,86 @@
         },
         "optional": true
       },
+      "deliveryMethod": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "delivery"
+            },
+            {
+              "type": "string",
+              "value": "pickup"
+            }
+          ]
+        },
+        "optional": true
+      },
+      "orderStatus": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "pending"
+            },
+            {
+              "type": "string",
+              "value": "confirmed"
+            },
+            {
+              "type": "string",
+              "value": "preparing"
+            },
+            {
+              "type": "string",
+              "value": "out_for_delivery"
+            },
+            {
+              "type": "string",
+              "value": "delivered"
+            },
+            {
+              "type": "string",
+              "value": "ready_for_pickup"
+            },
+            {
+              "type": "string",
+              "value": "picked_up"
+            },
+            {
+              "type": "string",
+              "value": "cancelled"
+            }
+          ]
+        },
+        "optional": true
+      },
       "orderDate": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "adminNewOrderNotificationSentAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "customerStatusNotificationSentAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "customerStatusNotificationStatus": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
@@ -1574,7 +1869,38 @@
         },
         "optional": true
       },
+      "sellingType": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "fixed"
+            },
+            {
+              "type": "string",
+              "value": "loose"
+            }
+          ]
+        },
+        "optional": true
+      },
       "price": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "number"
+        },
+        "optional": true
+      },
+      "pricePerKg": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "number"
+        },
+        "optional": true
+      },
+      "weightIncrement": {
         "type": "objectAttribute",
         "value": {
           "type": "number"
@@ -1653,15 +1979,35 @@
           "of": [
             {
               "type": "string",
-              "value": "gadget"
+              "value": "dailyuse"
             },
             {
               "type": "string",
-              "value": "appliances"
+              "value": "oilrefine"
             },
             {
               "type": "string",
-              "value": "refrigerators"
+              "value": "masala"
+            },
+            {
+              "type": "string",
+              "value": "milkproducts"
+            },
+            {
+              "type": "string",
+              "value": "biscuitsbread"
+            },
+            {
+              "type": "string",
+              "value": "soapsurf"
+            },
+            {
+              "type": "string",
+              "value": "chocolates"
+            },
+            {
+              "type": "string",
+              "value": "colddrinks"
             },
             {
               "type": "string",

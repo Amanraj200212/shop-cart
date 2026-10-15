@@ -19,6 +19,16 @@ export const blogType = defineType({
       },
     }),
     defineField({
+      name: "description",
+      title: "SEO Description",
+      type: "string",
+      validation: (Rule) =>
+        Rule.required()
+          .min(50)
+          .max(160)
+          .warning("Aim for 50–160 characters for SEO."),
+    }),
+    defineField({
       name: "author",
       type: "reference",
       to: { type: "author" },
