@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider
-      proxyUrl={process.env.NEXT_PUBLIC_CLERK_PROXY_URL}
+      // proxyUrl={process.env.NEXT_PUBLIC_CLERK_PROXY_URL}
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
     >
