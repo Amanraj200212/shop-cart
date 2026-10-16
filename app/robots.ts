@@ -9,7 +9,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: [
         "/__clerk/",
-        "/_next/",
         "/addresses",
         "/admin/",
         "/api/",
