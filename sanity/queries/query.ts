@@ -89,6 +89,17 @@ const OTHERS_BLOG_QUERY = defineQuery(`*[
   }
 }`);
 
+const SITEMAP_DOCUMENTS_QUERY = defineQuery(`
+  *[
+    _type in ["product", "category", "blog"] &&
+    defined(slug.current)
+  ] {
+    _type,
+    "slug": slug.current,
+    _updatedAt
+  }
+`);
+
 const ADDRESS_FIELDS = `
   _id,
   _type,
@@ -134,6 +145,7 @@ export {
   SINGLE_BLOG_QUERY,
   BLOG_CATEGORIES,
   OTHERS_BLOG_QUERY,
+  SITEMAP_DOCUMENTS_QUERY,
   USER_ADDRESSES_QUERY,
   USER_ADDRESS_BY_ID_QUERY,
   USER_DEFAULT_ADDRESS_IDS_QUERY,
