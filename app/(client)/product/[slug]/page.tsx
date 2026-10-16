@@ -12,7 +12,12 @@ import {FaRegQuestionCircle} from "react-icons/fa"
 import {FiShare2} from "react-icons/fi"
 import {TbTruckDelivery} from "react-icons/tb"
 import PriceFormatter from '@/components/PriceFormatter';
-import { isLooseProduct, ProductWithSellingType } from '@/lib/loose-products';
+import {
+  calculateLoosePrice,
+  getInitialWeightGrams,
+  isLooseProduct,
+  ProductWithSellingType,
+} from '@/lib/loose-products';
 import ProductCard from '@/components/ProductCard';
 import { sanityFetch } from '@/sanity/lib/live';
 import { Separator } from '@/components/ui/separator';
@@ -44,7 +49,12 @@ const page = async({params}: {params: Promise<{slug: string}>}) => {
 
   //this is for structured data for product page (google search console)
   const productUrl = `${siteUrl}/product/${slug}`;
-  const productPrice = isLoose ? productForSale.pricePerKg : product.price;
+  const productPrice = isLoose
+    ? calculateLoosePrice(
+        productForSale.pricePerKg,
+        getInitialWeightGrams(productForSale, "gram"),
+      )
+    : product.price;
   const productImages = product.images
     ?.filter((image) => image.asset)
     .map((image) => urlFor(image).width(1200).url());
