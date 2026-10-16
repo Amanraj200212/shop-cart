@@ -16,6 +16,9 @@ import { isLooseProduct, ProductWithSellingType } from '@/lib/loose-products';
 import ProductCard from '@/components/ProductCard';
 import { sanityFetch } from '@/sanity/lib/live';
 import { Separator } from '@/components/ui/separator';
+import { urlFor } from '@/sanity/lib/image';
+
+const siteUrl = "https://kiranadukan.shop";
 
 const page = async({params}: {params: Promise<{slug: string}>}) => {
   const {slug} = await params;
@@ -39,8 +42,45 @@ const page = async({params}: {params: Promise<{slug: string}>}) => {
     : { data: [] };
   const relatedProducts = (relatedProductsResult.data ?? []) as ProductWithSellingType[];
 
+  //this is for structured data for product page (google search console)
+  const productUrl = `${siteUrl}/product/${slug}`;
+  const productPrice = isLoose ? productForSale.pricePerKg : product.price;
+  const productImages = product.images
+    ?.filter((image) => image.asset)
+    .map((image) => urlFor(image).width(1200).url());
+  const productStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "@id": productUrl,
+    name: product.name,
+    description: product.description,
+    url: productUrl,
+    ...(productImages?.length ? { image: productImages } : {}),
+    ...(typeof productPrice === "number" && productPrice >= 0
+      ? {
+          offers: {
+            "@type": "Offer",
+            url: productUrl,
+            priceCurrency: "INR",
+            price: productPrice.toFixed(2),
+            availability:
+              product.stock === 0
+                ? "https://schema.org/OutOfStock"
+                : "https://schema.org/InStock",
+            itemCondition: "https://schema.org/NewCondition",
+          },
+        }
+      : {}),
+  };
+
   return (
     <div className='mx-auto px-4'>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(productStructuredData).replace(/</g, "\\u003c"),
+        }}
+      />
       <Container className='flex flex-col md:flex-row gap-10 py-10'>
         {product?.images && (
           <ImageView images={product?.images} isStock={product?.stock}/>
